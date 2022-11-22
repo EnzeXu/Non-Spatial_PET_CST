@@ -1,3 +1,4 @@
 *
 !.gitignore
-!params_default.npy
+!params_default_33.npy
+!params_default_46.npy

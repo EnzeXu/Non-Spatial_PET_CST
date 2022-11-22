@@ -1,9 +1,17 @@
 import numpy as np
 import os
 import time
+import json
 import matplotlib.pyplot as plt
 from pymoo.core.problem import ElementwiseProblem
 from pymoo.algorithms.moo.nsga2 import NSGA2
+from pymoo.algorithms.soo.nonconvex.de import DE
+from pymoo.algorithms.soo.nonconvex.es import ES
+from pymoo.algorithms.soo.nonconvex.pso import PSO
+from pymoo.algorithms.soo.nonconvex.brkga import BRKGA
+from pymoo.algorithms.soo.nonconvex.g3pcx import G3PCX
+
+from pymoo.operators.sampling.lhs import LHS
 from pymoo.operators.crossover.sbx import SBX
 from pymoo.operators.mutation.pm import PM
 from pymoo.operators.sampling.rnd import FloatRandomSampling
@@ -39,14 +47,14 @@ class MyProblem(ElementwiseProblem):
         # loss1, loss2, loss3, loss4, loss5, loss6, loss7 = iter(loss_all)
         loss1 = np.sum(loss_all)
         # loss1 = np.sum(np.abs(x))
-        # loss2 = np.sum(x[33: 46] - np.floor(x[33: 46]))
+        # eq1 = np.sum(x[33: 46] - np.floor(x[33: 46]))
 
 
         out["F"] = [loss1]  # [loss1, loss2]
         # out["H"] = [eq1]
 
 
-def simulate(pop_size=50, generation=100):
+def simulate(pop_size=50, generation=100, method="GA"):
     time_string_start = get_now_string()
     t0 = time.time()
     print("[run - multi_obj] Start at {}".format(time_string_start))
@@ -54,18 +62,54 @@ def simulate(pop_size=50, generation=100):
 
     initial_x = np.asarray([PARAMS[i]["init"] for i in range(PARAM_NUM)])  # default
 
-    algorithm = NSGA2(
-        pop_size=pop_size,  # [highlight] population size
-        n_offsprings=2,
-        sampling=FloatRandomSampling(),  # sampling=initial_x
-        crossover=SBX(prob=0.9, eta=15),
-        mutation=PM(eta=20),
-        eliminate_duplicates=True
-    )
+    assert method in ["GA", "DE", "ES", "PSO", "BRKGA", "G3PCX"]
+    print("[run - multi_obj] Method: {}".format(method))
+    if method == "DE":
+        algorithm = DE(
+            pop_size=pop_size,
+            n_offsprings=2,
+            sampling=LHS(),
+            variant="DE/rand/1/bin",
+            CR=0.3,
+            dither="vector",
+            jitter=False
+        )
+    elif method == "ES":
+        algorithm = ES(
+            pop_size=pop_size,
+            n_offsprings=100,
+            rule=1.0 / 7.0
+        )
+    elif method == "PSO":
+        algorithm = PSO(
+            pop_size=pop_size,
+        )
+    elif method == "BRKGA":
+        algorithm = BRKGA(
+            n_elites=10,
+            sampling=initial_x,
+            n_offsprings=2,
+            n_mutants=10,
+            bias=0.7
+        )
+    elif method == "G3PCX":
+        algorithm = G3PCX(
+            pop_size=pop_size,
+            n_offsprings=2
+        )
+    else:
+        algorithm = NSGA2(
+            pop_size=pop_size,  # [highlight] population size
+            n_offsprings=2,
+            sampling=initial_x,  # sampling=initial_x
+            crossover=SBX(prob=0.9, eta=15),
+            mutation=PM(eta=20),
+            eliminate_duplicates=True
+        )
 
     termination = get_termination("n_gen", generation)  # [highlight] step number
     t00 = time.time()
-    print("[run - multi_obj] Starting GA ...")
+    print("[run - multi_obj] Starting ...")
     res = minimize(problem,
                    algorithm,
                    termination,
@@ -140,13 +184,18 @@ def simulate(pop_size=50, generation=100):
     """
 
 
-def test_params(params_path="saves/params_default.npy"):
+def test_params(params_path="saves/params_default_46.npy"):
     params = np.load(params_path)
+    params_dic = {PARAM_NAME_LIST[i]: "{} [{}, {}, {}]".format(params[i], PARAMS[i]["lb"], PARAMS[i]["init"], PARAMS[i]["ub"]) for i in range(PARAM_NUM)}
+    print("Params = ")
+    print(json.dumps(params_dic, indent=4))
     run(params)
+    return params
 
 
 if __name__ == "__main__":
-    simulate(pop_size=10, generation=20)
-    # test_params("saves/params_20221108_135259.npy")
+    simulate(pop_size=30, generation=1000, method="DE")
+    # test_params("saves/params_20221112_205713.npy")
+    # test_params("saves/params_20221112_225529.npy")
     # test_params()
 

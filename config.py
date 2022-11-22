@@ -3,6 +3,7 @@ import os
 
 from const import LABEL_ID
 
+
 class Config:
     N_dim = 160
     L = np.identity(N_dim)
@@ -57,8 +58,17 @@ class Start:
 
 if __name__ == "__main__":
     Tf = np.load(os.path.join("data/PET/", "PET-T_{}.npy".format("CN")))
-    Tf = np.mean(Tf).reshape(1)
-    print(Tf.shape)
+    Af = np.load(os.path.join("data/PET/", "PET-A_{}.npy".format("CN")))
+    N = np.load(os.path.join("data/PET/", "PET-N_{}.npy".format("CN")))
+    # Tf = np.mean(Tf).reshape(1)
+    print("Af: {}".format(np.mean(Af)))
+    print("Tf: {}".format(np.mean(Tf)))
+    print("N: {}".format(np.mean(N)))
+    csf_data = np.load(os.path.join("data/CSF/", "CSF_{}.npy".format("CN")))
+    print("ACSF: {}".format(csf_data[0]))
+    print("TpCSF: {}".format(csf_data[2]))
+    print("TCSF: {}".format(csf_data[1] - csf_data[2]))
+    # print("TtCSF: {}".format(csf_data[1]))
 
 
 
