@@ -61,7 +61,7 @@ def simulate(pop_size=50, generation=100, method="GA"):
     problem = MyProblem()
 
     initial_x = np.asarray([PARAMS[i]["init"] for i in range(PARAM_NUM)])  # default
-
+#    initial_x = np.load("saves/params_20221203_113822.npy")
     assert method in ["GA", "DE", "ES", "PSO", "BRKGA", "G3PCX"]
     print("[run - multi_obj] Method: {}".format(method))
     if method == "DE":
