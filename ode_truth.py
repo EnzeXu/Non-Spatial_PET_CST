@@ -101,15 +101,19 @@ class ADSolver:
         self.y = None
         self.output = None
         self.params = None
+        self.starts_weights = None
         self.tol = 1e-4
         # print("atol = rtol = {}".format(self.tol))
 
-    def step(self, _params=None):
+    def step(self, _params=None, _starts_weights=None):
         if _params is not None:
             self.params = np.asarray(_params)
+            self.starts_weights = np.asarray(_starts_weights)
         else:
             self.params = np.asarray([PARAMS[i]["init"] for i in range(PARAM_NUM)])
-            print("Params is not given. Using the initial params instead to simulate ...")
+            self.starts_weights = np.asarray([STARTS_WEIGHTS[i]["init"] for i in range(STARTS_NUM)])
+            print("Params & starts_weights are not given. Using the initial value instead to simulate ...")
+        self.y0 = self.y0 * self.starts_weights
         self.y = odeint(self.pend, self.y0, self.t, rtol=self.tol, atol=self.tol)
         self.output = self.get_output()
 
@@ -315,10 +319,10 @@ class ADSolver:
         print("Save flag: {}. Rest figure is saved to {}".format(save_flag, save_path_rest))
 
 
-def loss_func(params, ct):
+def loss_func(params, starts_weight, ct):
     # print("calling loss_func..")
     truth = ADSolver("CN")
-    truth.step(params)
+    truth.step(params, starts_weight)
     targets = ["APET", "TPET", "NPET", "ACSF", "TpCSF", "TCSF", "TtCSF"]
     record = np.zeros(len(targets))
     for i, one_target in enumerate(targets):

@@ -30,12 +30,12 @@ def toy_loss_func(x):
 
 class MyProblem(ElementwiseProblem):
     def __init__(self):
-        super().__init__(n_var=PARAM_NUM,
+        super().__init__(n_var=PARAM_NUM + STARTS_NUM,
                          n_obj=1,
                          # n_eq_constr=1,
                          #n_ieq_constr=0,
-                         xl=np.array([PARAMS[i]["lb"] for i in range(PARAM_NUM)]),
-                         xu=np.array([PARAMS[i]["ub"] for i in range(PARAM_NUM)]),
+                         xl=np.asarray([PARAMS[i]["lb"] for i in range(PARAM_NUM)] + [STARTS_WEIGHTS[i]["lb"] for i in range(STARTS_NUM)]),
+                         xu=np.asarray([PARAMS[i]["ub"] for i in range(PARAM_NUM)] + [STARTS_WEIGHTS[i]["ub"] for i in range(STARTS_NUM)]),
                          )
         self.ct = ConstTruth(
             csf_folder_path="data/CSF/",
@@ -43,7 +43,7 @@ class MyProblem(ElementwiseProblem):
         )
 
     def _evaluate(self, x, out, *args, **kwargs):
-        loss_all = loss_func(x, self.ct)
+        loss_all = loss_func(x[:-STARTS_NUM], x[-STARTS_NUM:], self.ct)
         # loss1, loss2, loss3, loss4, loss5, loss6, loss7 = iter(loss_all)
         loss1 = np.sum(loss_all)
         # loss1 = np.sum(np.abs(x))
@@ -60,7 +60,7 @@ def simulate(pop_size=50, generation=100, method="GA"):
     print("[run - multi_obj] Start at {}".format(time_string_start))
     problem = MyProblem()
 
-    initial_x = np.asarray([PARAMS[i]["init"] for i in range(PARAM_NUM)])  # default
+    initial_x = np.asarray([PARAMS[i]["init"] for i in range(PARAM_NUM)] + [STARTS_WEIGHTS[i]["init"] for i in range(STARTS_NUM)])  # default
 #    initial_x = np.load("saves/params_20221203_113822.npy")
     assert method in ["GA", "DE", "ES", "PSO", "BRKGA", "G3PCX"]
     print("[run - multi_obj] Method: {}".format(method))
@@ -161,7 +161,8 @@ def simulate(pop_size=50, generation=100, method="GA"):
     print("[run - multi_obj] End at {0} ({1:.2f} min)".format(time_string_end, (t1 - t0) / 60.0))
 
     original_params = np.asarray([PARAMS[i]["init"] for i in range(PARAM_NUM)])
-    original_loss = np.sum(loss_func(original_params, problem.ct))
+    original_starts_weights = np.asarray([STARTS_WEIGHTS[i]["init"] for i in range(STARTS_NUM)])
+    original_loss = np.sum(loss_func(original_params, original_starts_weights, problem.ct))
     print("[run - multi_obj] Note that using the initial params loss = {}".format(original_loss))
 
     # plt.figure(figsize=(7, 5))
