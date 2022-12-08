@@ -6,3 +6,4 @@ backups.py
 slides/*
 
 logs/*
+venv/*
