@@ -13,5 +13,5 @@
 #SBATCH --error="jobs_oe/nsga-%j.e"
 
 echo $(pwd) > "jobs/pwd.txt"
-source /deac/csc/chenGrp/software/tensorflow/bin/activate
+source venv/bin/activate
 python test_nsga.py
