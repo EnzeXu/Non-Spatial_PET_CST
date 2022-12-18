@@ -171,9 +171,13 @@ class ADSolver:
         TpCSF = y[self.n * 7 + 2: self.n * 7 + 3]
         N = y[self.n * 7 + 3: self.n * 8 + 3]
 
+        # k_p1Am, k_p2Am, k_dAm, k_diA, k_cA, k_sA, k_dAo, k_yA, k_pTm, k_dTm, k_ph1, k_ph2, k_deph, k_diT, k_cT, k_sT, k_dTp, k_sTp, k_dTo, k_yT, k_yTp, k_AN, k_TN, k_a1A, k_a2A, k_a1T, k_a2T, K_mTA, K_mAT, K_mAN, K_mTN, K_mT2, K_mA2 \
+        #     = iter(self.params)
 
         k_p1Am, k_p2Am, k_dAm, k_diA, k_cA, k_sA, k_dAo, k_yA, k_pTm, k_dTm, k_ph1, k_ph2, k_deph, k_diT, k_cT, k_sT, k_dTp, k_sTp, k_dTo, k_yT, k_yTp, k_AN, k_TN, k_a1A, k_a2A, k_a1T, k_a2T, K_mTA, K_mAT, K_mAN, K_mTN, K_mT2, K_mA2, n_TA, n_cA, n_AT, n_cT, n_cTp, n_cTo, n_AN, n_TN, n_a1A, n_a2A, n_a1T, n_a2T, n_a1Tp \
             = iter(self.params)
+#        k_p1Am, k_p2Am, k_dAm, k_diA, k_cA, k_sA, k_dAo, k_yA, k_pTm, k_dTm, k_ph1, k_ph2, k_deph, k_diT, k_cT, k_sT, k_dTp, k_sTp, k_dTo, k_yT, k_yTp, k_AN, k_TN, k_a1A, k_a2A, k_a1T, k_a2T, K_mTA, K_mAT, K_mAN, K_mTN, K_mT2, K_mA2, n_TA, n_cA, n_AT, n_cT, n_cTp, n_cTo, n_AN, n_TN, n_a1A, n_a2A, n_a1T, n_a2T, n_a1Tp, K_cA \
+#            = iter(self.params)
 
         # n_TA = 2.0
         # n_cA = 4.0
@@ -199,17 +203,47 @@ class ADSolver:
         matmul_func = my_matmul  # np.matmul
         offset = 1e-18
 
-
+#        Am_ = k_p1Am + k_p2Am * 1.0 / (numpy_safe_pow(K_mTA, n_TA) / numpy_safe_pow(To, n_TA) + 1.0) - k_dAm * Am - n_a1A * k_a1A * (
+#                    numpy_safe_pow(Am, n_a1A)) - n_a2A * k_a2A * Af * 1.0 / (1.0 + numpy_safe_pow(K_mA2, n_a2A) / numpy_safe_pow(Am, n_a2A)) + (
+#                          n_a1A + n_a2A) * k_diA * Ao - n_cA * k_cA * (
+#                          numpy_safe_pow(Am, n_cA)) * Ao - k_sA * Am + d_Am * matmul_func(self.L, Am)
+#        Am_ = k_p1Am * (1 + k_p2Am * numpy_safe_pow(To, n_TA)) - k_dAm * Am - n_a1A * k_a1A * (
+#                     numpy_safe_pow(Am, n_a1A)) - n_a2A * k_a2A * Af * 1.0 / (1.0 + numpy_safe_pow(K_mA2, n_a2A) / numpy_safe_pow(Am, n_a2A)) + (
+#                           n_a1A + n_a2A) * k_diA * Ao - n_cA * k_cA * (
+#                           numpy_safe_pow(Am, n_cA)) * Ao - k_sA * Am + d_Am * matmul_func(self.L, Am)
+#        Am_ = k_p1Am * (1 + k_p2Am * numpy_safe_pow(To, n_TA)) - k_dAm * Am - n_a1A * k_a1A * (
+#                     numpy_safe_pow(Am, n_a1A)) - n_a2A * k_a2A * Af * numpy_safe_pow(Am, n_a2A) + (
+#                           n_a1A + n_a2A) * k_diA * Ao - n_cA * k_cA * (
+#                           numpy_safe_pow(Am, n_cA)) * Ao - k_sA * Am + d_Am * matmul_func(self.L, Am)
         Am_ = k_p1Am + k_p2Am * 1.0 / (numpy_safe_pow(K_mTA, n_TA) / numpy_safe_pow(To, n_TA) + 1.0) - k_dAm * Am - n_a1A * k_a1A * (
                      numpy_safe_pow(Am, n_a1A)) - n_a2A * k_a2A * Af * numpy_safe_pow(Am, n_a2A) + (
                            n_a1A + n_a2A) * k_diA * Ao - n_cA * k_cA * (
                            numpy_safe_pow(Am, n_cA)) * Ao - k_sA * Am + d_Am * matmul_func(self.L, Am)
+#        Am_ = k_p1Am + k_p2Am * 1.0 / (numpy_safe_pow(K_mTA, n_TA) / numpy_safe_pow(To, n_TA) + 1.0) - k_dAm * Am - n_a1A * k_a1A * (
+#                     numpy_safe_pow(Am, n_a1A)) - n_a2A * k_a2A * Af * numpy_safe_pow(Am, n_a2A) + (
+#                           n_a1A + n_a2A) * k_diA * Ao - n_cA * k_cA * Ao * 1.0 / (
+#                           numpy_safe_pow(K_cA, n_cA) / numpy_safe_pow(Am, n_cA) + 1.0)  - k_sA * Am + d_Am * matmul_func(self.L, Am)
+#        Am_ = k_p1Am + k_p2Am * 1.0 / (numpy_safe_pow(K_mTA, n_TA) / numpy_safe_pow(To, n_TA) + 1.0) - k_dAm * Am - n_a1A * k_a1A * (
+#                     numpy_safe_pow(Am, n_a1A)) - n_a2A * k_a2A * Af * numpy_safe_pow(Am, n_a2A) + (
+#                           n_a1A + n_a2A) * k_diA * Ao - n_cA * k_cA * (
+#                           numpy_safe_pow(Am, n_cA)) * Ao - k_sA * 1.0 / (1.0 +  numpy_safe_pow(K_ACSF, n_ACSF) / numpy_safe_pow(Am, n_ACSF)) + d_Am * matmul_func(self.L, Am)
 
         Ao_ = - k_dAo * Ao + k_a1A * numpy_safe_pow(Am, n_a1A) + k_a2A * Af * numpy_safe_pow(Am, n_a2A) - k_diA * Ao - k_cA * numpy_safe_pow(Am, n_cA) * Ao + d_Ao * matmul_func(self.L,
                                                                                                                Ao)
-        Af_ = k_cA * numpy_safe_pow(Am, n_cA) * Ao
+#        Ao_ = - k_dAo * Ao + k_a1A * numpy_safe_pow(Am, n_a1A) + k_a2A * Af * numpy_safe_pow(Am, n_a2A) - k_diA * Ao - k_cA * Ao * 1.0 / (
+#                           numpy_safe_pow(K_cA, n_cA) / numpy_safe_pow(Am, n_cA) + 1.0) + d_Ao * matmul_func(self.L,
+#                                                                                                               Ao)
 
+#        Ao_ = - k_dAo * Ao + k_a1A * numpy_safe_pow(Am, n_a1A) + k_a2A * Af * 1.0 / (
+#                    1.0 + numpy_safe_pow(K_mA2, n_a2A) / numpy_safe_pow(Am, n_a2A)) - k_diA * Ao - k_cA * numpy_safe_pow(Am, n_cA) * Ao + d_Ao * matmul_func(self.L,
+#                                                                                                               Ao)
+        Af_ = k_cA * numpy_safe_pow(Am, n_cA) * Ao
+#        Af_ = k_cA * Ao * 1.0 / (numpy_safe_pow(K_cA, n_cA) / numpy_safe_pow(Am, n_cA) + 1.0)
+#        IACSF_ = k_sA * sum_func(Am) - k_I2CSF * IACSF
+#        ACSF_ = k_I2CSF * IACSF- k_yA * ACSF
         ACSF_ = k_sA * sum_func(Am) - k_yA * ACSF
+#        ACSF_ = k_sA * sum_func(Am**2) - k_yA * ACSF   #NO###Am needs to be changed simultaneously
+#        ACSF_ = k_sA * sum_func(1.0 / (1.0 +  numpy_safe_pow(K_ACSF, n_ACSF) / numpy_safe_pow(Am, n_ACSF))) - k_yA * ACSF
 
         Tm_ = k_pTm - k_dTm * Tm - (
                     k_ph1 + k_ph2 * 1.0 / (numpy_safe_pow(K_mAT, n_AT) / numpy_safe_pow(Ao, n_AT) + 1.0)) * Tm + k_deph * Tp - n_a1T * k_a1T * numpy_safe_pow(
@@ -229,7 +263,7 @@ class ADSolver:
         Tf_ = k_cT * numpy_safe_pow(Tm, n_cT) * numpy_safe_pow(Tp, n_cTp) * numpy_safe_pow(To, n_cTo)
 
         TCSF_ = k_sT * sum_func(Tm) - k_yT * TCSF
-
+#        TCSF_ = k_sT * sum_func(Tm**2) - k_yT * TCSF
         TpCSF_ = k_sTp * sum_func(Tp) - k_yTp * TpCSF
 
         N_ = k_AN * 1.0 / (numpy_safe_pow(K_mAN, n_AN) / numpy_safe_pow((Ao + Af), n_AN) + 1.0) + k_TN * 1.0 / (
@@ -401,9 +435,10 @@ if __name__ == "__main__":
     # record1 = loss_func(np.asarray([PARAMS[i]["init"] for i in range(PARAM_NUM)]), ct)
     # print(record1)
     # print("hhhh")
-#    params = np.load("saves/params_20221206_093250.npy")
+#    params = np.load("saves/params_20221205_221101.npy")
 #    params = np.load("saves/params_20221129_201557.npy")
     params = np.asarray([PARAMS[i]["init"] for i in range(PARAM_NUM)])
+#    params = np.load("saves/params_20221202_095940.npy")
      
     # print(len(params))
     # np.save("saves/params_default_46.npy", params)
