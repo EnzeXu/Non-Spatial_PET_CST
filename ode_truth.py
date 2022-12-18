@@ -46,7 +46,7 @@ class ConstTruth:
         label_list = LABEL_LIST  # [[0, 2, 3, 4]]  # skip the second nodes (SMC)
         self.class_num = len(label_list)
         if "x" not in params:
-            self.x = np.asarray([0, 3, 6, 8, 9])
+            self.x = np.asarray([3, 6, 9, 11, 12])
         else:
             self.x = np.asarray(params.get("x"))
         self.y = dict()
@@ -83,7 +83,7 @@ class ADSolver:
         self.n = 1  # Config.N_dim
         self.L = Config.L
         #        self.t = np.linspace(0, 10 - 0.1, 100)
-        self.T = 9.01
+        self.T = 12.01
         self.T_unit = 0.01
         self.t = np.linspace(0.0, self.T - self.T_unit, int(self.T / self.T_unit))  # expand time
         self.class_name = class_name
@@ -268,14 +268,18 @@ class ADSolver:
                 # print(len(x), len(y))
                 ax2 = ax.twinx()
                 ax2.set_ylabel("truth points val", fontsize=15)
-                if line_string in ["TCSF", "NPET"]:
+                if line_string in ["NPET"]:
                     ax2.scatter(x=x, y=y, s=100, facecolor="blue", alpha=0.5, marker="d",
                                 edgecolors='black', linewidths=1,
                                 zorder=10)
-                else:
+                elif line_string in ["ACSF", "TpCSF", "TCSF", "TtCSF"]:
                     ax2.scatter(x=x[[0, 2, 3, 4]], y=y[[0, 2, 3, 4]], s=100, facecolor="red", alpha=0.5, marker="o", edgecolors='black', linewidths=1,
                                 zorder=10)
                     ax2.scatter(x=x[1], y=y[1], s=100, facecolor="blue", alpha=0.5, marker="d", edgecolors='black', linewidths=1,
+                                zorder=10)
+                else:
+                    ax2.scatter(x=x[[0, 2, 3, 4]], y=y[[0, 2, 3, 4]], s=100, facecolor="red", alpha=0.5, marker="o",
+                                edgecolors='black', linewidths=1,
                                 zorder=10)
                 ax2.tick_params(axis='y', labelcolor="red", labelsize=15)
 
@@ -326,8 +330,11 @@ def loss_func(params, starts_weight, ct):
     targets = ["APET", "TPET", "NPET", "ACSF", "TpCSF", "TCSF", "TtCSF"]
     record = np.zeros(len(targets))
     for i, one_target in enumerate(targets):
-        target_points = np.asarray(ct.y[one_target])[[0, 2, 3, 4]]
-        t_fixed = np.asarray([0, 6, 8, 9])
+        target_points = np.asarray(ct.y[one_target])[[0, 1, 2, 3, 4]]
+        t_fixed = np.asarray([3, 6, 9, 11, 12])
+        if one_target in ["ACSF", "TpCSF", "TCSF", "TtCSF"]:  # skip the second points for all CSFs
+            target_points = target_points[[0, 2, 3, 4]]
+            t_fixed = t_fixed[[0, 2, 3, 4]]
         index_fixed = (t_fixed / truth.T_unit).astype(int)
         predict_points = np.asarray(truth.output[i][0][index_fixed])
         # print("target_points:", target_points.shape)
@@ -350,7 +357,7 @@ def loss_func(params, starts_weight, ct):
 
         # record[i] = np.mean(((predict_points - target_points) / target_points) ** 2)
         record[i] = np.mean((predict_points_scaled - target_points_scaled) ** 2)
-    record = record[[0, 1, 3, 4, 6]]
+    record = record[[0, 1, 3, 4, 5, 6]]
     return record  # remove NPET here
 
 
