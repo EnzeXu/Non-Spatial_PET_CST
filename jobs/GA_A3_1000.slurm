@@ -2,8 +2,8 @@
 #SBATCH --job-name="GA_A3_1000"
 #SBATCH --partition=small
 #SBATCH --nodes=1
-#SBATCH --time=2-00:00:00
-#SBATCH --mem=64GB
+#SBATCH --time=0-05:00:00
+#SBATCH --mem=16GB
 #SBATCH --mail-user=xue20@wfu.edu
 #SBATCH --mail-type=BEGIN,END,FAIL
 #SBATCH --output="jobs_oe/GA_A3_1000-%j.o"
