@@ -378,7 +378,7 @@ class MyTime:
         print("count = {}; total time = {} s; avg time = {} s".format(self.count, self.sum, self.sum / self.count))
 
 
-def run(params=None):
+def run(params=None, starts=None):
     time_string = get_now_string()
     print("Time String (as folder name): {}".format(time_string))
 
@@ -388,7 +388,7 @@ def run(params=None):
         pet_folder_path="data/PET/"
     )
     truth = ADSolver(class_name, ct)
-    truth.step(params)
+    truth.step(params, starts)
     truth.draw(time_string=time_string)
 
 

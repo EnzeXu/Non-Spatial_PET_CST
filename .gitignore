@@ -4,6 +4,6 @@ __pycache__/*
 
 backups.py
 slides/*
-
+figure_slides/*
 logs/*
 venv/*

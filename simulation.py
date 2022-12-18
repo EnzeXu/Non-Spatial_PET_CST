@@ -185,6 +185,32 @@ def simulate(pop_size=50, generation=100, method="GA"):
     """
 
 
+def draw_bar(title, names, data, save_path):
+    fig, ax = plt.subplots(figsize=(16, 9))
+
+    ax.barh(names, data)
+
+    for s in ['top', 'bottom', 'left', 'right']:
+        ax.spines[s].set_visible(False)
+
+    ax.xaxis.set_ticks_position('none')
+    ax.yaxis.set_ticks_position('none')
+
+    ax.xaxis.set_tick_params(pad=5, labelsize=15)
+    ax.yaxis.set_tick_params(pad=10, labelsize=15)
+
+    ax.grid(visible=True, color='black', linestyle='-.', linewidth=1, alpha=0.2)
+    ax.invert_yaxis()
+
+    for i in ax.patches:
+        plt.text(i.get_width() + 0.2, i.get_y() + 0.5, str(round((i.get_width()), 2)), fontsize=15, color='black')
+
+    ax.set_title(title, loc='left', fontsize=20)
+    # fig.text(0.9, 0.15, 'Jeeteshgavande30', fontsize=12, color='black', ha='right', va='bottom', alpha=0.7)
+    plt.savefig(save_path, dpi=300)
+    plt.show()
+
+
 def test_params(params_path="saves/params_default_46.npy"):
     params = np.load(params_path)
     params_dic = {PARAM_NAME_LIST[i]: "{} [{}, {}, {}]".format(params[i], PARAMS[i]["lb"], PARAMS[i]["init"], PARAMS[i]["ub"]) for i in range(PARAM_NUM)}
@@ -194,8 +220,29 @@ def test_params(params_path="saves/params_default_46.npy"):
     return params
 
 
+def test_params_starts(params_path="saves/params_default_57.npy"):
+    settings = np.load(params_path)
+    params = settings[:PARAM_NUM]
+    starts = settings[-STARTS_NUM:]
+    params_names = np.asarray([PARAMS[i]["name"] for i in range(PARAM_NUM)])
+    params_dic = {PARAM_NAME_LIST[i]: "{} [{}, {}, {}]".format(params[i], PARAMS[i]["lb"], PARAMS[i]["init"], PARAMS[i]["ub"]) for i in range(PARAM_NUM)}
+    print("Params = ")
+    print(json.dumps(params_dic, indent=4))
+
+    starts_names = np.asarray([STARTS_WEIGHTS[i]["name"] for i in range(STARTS_NUM)])
+    starts_dic = {STARTS_NAME_LIST[i]: "{} [{}, {}, {}]".format(starts[i], STARTS_WEIGHTS[i]["lb"], STARTS_WEIGHTS[i]["init"], STARTS_WEIGHTS[i]["ub"]) for i in range(STARTS_NUM)}
+    print("Starts Weights = ")
+    print(json.dumps(starts_dic, indent=4))
+    run(params, starts)
+    return params_names, params, starts_names, starts
+
 if __name__ == "__main__":
-    simulate(pop_size=30, generation=1000, method="DE")
+    # simulate(pop_size=30, generation=1000, method="DE")
+    params = np.asarray([PARAMS[i]["init"] for i in range(PARAM_NUM)])
+    starts = np.asarray([STARTS_WEIGHTS[i]["init"] for i in range(STARTS_NUM)])
+    settings = np.concatenate([params, starts])
+    print(settings.shape)
+    np.save("saves/params_default_57.npy", settings)
     # test_params("saves/params_20221112_205713.npy")
     # test_params("saves/params_20221112_225529.npy")
     # test_params()
