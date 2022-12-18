@@ -76,6 +76,7 @@ class ConstTruth:
             self.y["TCSF"] = self.y["TCSF"] + [csf_data[1] - csf_data[2]]
         for one_key in ["APET", "TPET", "NPET", "ACSF", "TpCSF", "TCSF", "TtCSF"]:
             self.y[one_key] = np.asarray(self.y[one_key])
+        self.y["NPET"] = 1.0 - (self.y["NPET"] - np.min(self.y["NPET"])) / (np.max(self.y["NPET"]) - np.min(self.y["NPET"]))
 
 
 class ADSolver:
@@ -282,7 +283,7 @@ class ADSolver:
             os.makedirs(folder_path)
         save_path_target = os.path.join(folder_path, "target.png")
         save_path_rest = os.path.join(folder_path, "rest.png")
-        m = MultiSubplotDraw(row=3, col=3, fig_size=(24, 18), tight_layout_flag=True, show_flag=True,
+        m = MultiSubplotDraw(row=3, col=3, fig_size=(24, 18), tight_layout_flag=True, show_flag=False,
                              save_flag=save_flag,
                              save_path=save_path_target, save_dpi=400)
         for name, data, color, line_string in zip(self.output_names, self.output[:len(self.output_names)],
@@ -312,7 +313,7 @@ class ADSolver:
                     ax2.scatter(x=x[1], y=y[1], s=100, facecolor="blue", alpha=0.5, marker="d", edgecolors='black', linewidths=1,
                                 zorder=10)
                 else:
-                    ax2.scatter(x=x[[0, 2, 3, 4]], y=y[[0, 2, 3, 4]], s=100, facecolor="red", alpha=0.5, marker="o",
+                    ax2.scatter(x=x, y=y, s=100, facecolor="red", alpha=0.5, marker="o",
                                 edgecolors='black', linewidths=1,
                                 zorder=10)
                 ax2.tick_params(axis='y', labelcolor="red", labelsize=15)
@@ -329,7 +330,7 @@ class ADSolver:
         m.draw()
         print("Save flag: {}. Target figure is saved to {}".format(save_flag, save_path_target))
 
-        m = MultiSubplotDraw(row=2, col=3, fig_size=(24, 12), tight_layout_flag=True, show_flag=True,
+        m = MultiSubplotDraw(row=2, col=3, fig_size=(24, 12), tight_layout_flag=True, show_flag=False,
                              save_flag=save_flag,
                              save_path=save_path_rest, save_dpi=400)
         for name, data, color in zip(self.output_names_rest, self.output[-len(self.output_names_rest):],
