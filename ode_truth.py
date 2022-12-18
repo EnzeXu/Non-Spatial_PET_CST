@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 import time
+import argparse
 from scipy.integrate import odeint
 from tqdm import tqdm
 
@@ -42,41 +43,49 @@ def my_matmul(m, x, expand=160):
 class ConstTruth:
     def __init__(self, **params):
         assert "csf_folder_path" in params and "pet_folder_path" in params, "please provide the save folder paths"
+        assert "dataset" in params
         csf_folder_path, pet_folder_path = params["csf_folder_path"], params["pet_folder_path"]
         label_list = LABEL_LIST  # [[0, 2, 3, 4]]  # skip the second nodes (SMC)
         self.class_num = len(label_list)
         if "x" not in params:
-            self.x = np.asarray([3, 6, 9, 11, 12])
+            self.x_all = np.asarray([3, 6, 9, 11, 12])
         else:
-            self.x = np.asarray(params.get("x"))
+            self.x_all = np.asarray(params.get("x"))
         self.y = dict()
+        self.x = dict()
         self.lines = ["APET", "TPET", "NPET", "ACSF", "TpCSF", "TCSF", "TtCSF"]
         for one_line in self.lines:
             self.y[one_line] = []
+            self.x[one_line] = self.x_all
         for i, class_name in enumerate(label_list):
             csf_data = np.load(os.path.join(csf_folder_path, "CSF_{}.npy".format(class_name)))
             pet_data_a = np.load(os.path.join(pet_folder_path, "PET-A_{}.npy".format(class_name)))
             pet_data_t = np.load(os.path.join(pet_folder_path, "PET-T_{}.npy".format(class_name)))
             pet_data_n = np.load(os.path.join(pet_folder_path, "PET-N_{}.npy".format(class_name)))
-            # if class_name == "CN":
-            #     print("truth APET:", np.mean(pet_data_a))
-            #     print("truth TPET:", np.mean(pet_data_t))
-            #     print("truth NPET:", np.mean(pet_data_n))
-            #     print("truth ACSF", csf_data[0])
-            #     print("truth TtCSF:", csf_data[1])
-            #     print("truth TpCSF:", csf_data[2])
-            #     print("truth TCSF:", csf_data[1] - csf_data[2])
-            self.y["APET"] = self.y["APET"] + [np.mean(pet_data_a) ]
-            self.y["TPET"] = self.y["TPET"] + [np.mean(pet_data_t) ]
+            self.y["APET"] = self.y["APET"] + [np.mean(pet_data_a)]
+            self.y["TPET"] = self.y["TPET"] + [np.mean(pet_data_t)]
             self.y["NPET"] = self.y["NPET"] + [np.mean(pet_data_n)]
 
             self.y["ACSF"] = self.y["ACSF"] + [csf_data[0]] 
             self.y["TtCSF"] = self.y["TtCSF"] + [csf_data[1]]
             self.y["TpCSF"] = self.y["TpCSF"] + [csf_data[2]]
             self.y["TCSF"] = self.y["TCSF"] + [csf_data[1] - csf_data[2]]
-        for one_key in ["APET", "TPET", "NPET", "ACSF", "TpCSF", "TCSF", "TtCSF"]:
+        for one_key in self.lines:
             self.y[one_key] = np.asarray(self.y[one_key])
-        self.y["NPET"] = 1.0 - (self.y["NPET"] - np.min(self.y["NPET"])) / (np.max(self.y["NPET"]) - np.min(self.y["NPET"]))
+        self.y["NPET"] = 2.0 - self.y["NPET"]  # 1.0 - (self.y["NPET"] - np.min(self.y["NPET"])) / (np.max(self.y["NPET"]) - np.min(self.y["NPET"]))
+        assert params["dataset"] in ["all", "chosen_0"]
+        if params["dataset"] == "chosen_0":
+            for one_key in ["NPET"]:
+                self.y[one_key] = self.y[one_key][[]]
+                self.x[one_key] = self.x[one_key][[]]
+            for one_key in ["ACSF", "TpCSF", "TCSF", "TtCSF"]:
+                self.y[one_key] = self.y[one_key][[0, 2, 3, 4]]
+                self.x[one_key] = self.x[one_key][[0, 2, 3, 4]]
+        else:
+            for one_key in ["NPET"]:
+                self.y[one_key] = self.y[one_key][[]]
+                self.x[one_key] = self.x[one_key][[]]
+            pass
 
 
 class ADSolver:
@@ -276,47 +285,53 @@ class ADSolver:
         # mt.time_end()
         return dy
 
-    def draw(self, save_flag=True, time_string="test"):
+    def draw(self, save_flag=True, time_string="test", given_loss=None):
 
         folder_path = "figure/{}/".format(time_string)
         if not os.path.exists(folder_path):
             os.makedirs(folder_path)
-        save_path_target = os.path.join(folder_path, "target.png")
-        save_path_rest = os.path.join(folder_path, "rest.png")
+        save_path_target = os.path.join(folder_path, "figure_target_{}.png".format(time_string))
+        save_path_rest = os.path.join(folder_path, "figure_rest_{}.png".format(time_string))
         m = MultiSubplotDraw(row=3, col=3, fig_size=(24, 18), tight_layout_flag=True, show_flag=False,
                              save_flag=save_flag,
                              save_path=save_path_target, save_dpi=400)
-        for name, data, color, line_string in zip(self.output_names, self.output[:len(self.output_names)],
-                                                  self.colors[:len(self.output_names)], self.lines):
+        for i, (name, data, color, line_string) in enumerate(zip(self.output_names, self.output[:len(self.output_names)], self.colors[:len(self.output_names)], self.lines)):
             ax = m.add_subplot(
                 y_lists=data,
                 x_list=self.t,
                 color_list=[color],
                 line_style_list=["solid"],
-                fig_title=name,
+                fig_title="{}{}".format(name, " (loss={})".format(given_loss[i]) if given_loss is not None and i != 2 else ""),
                 legend_list=[name],
                 line_width=2,
             )
+            # ax.set_ylim([np.min(data[0]), np.max(data[0])])
             if self.const_truth:
-                x = self.const_truth.x
+                x = self.const_truth.x[line_string]
                 y = self.const_truth.y[line_string]
                 # print(len(x), len(y))
                 ax2 = ax.twinx()
                 ax2.set_ylabel("truth points val", fontsize=15)
-                if line_string in ["NPET"]:
-                    ax2.scatter(x=x, y=y, s=100, facecolor="blue", alpha=0.5, marker="d",
-                                edgecolors='black', linewidths=1,
-                                zorder=10)
-                elif line_string in ["ACSF", "TpCSF", "TCSF", "TtCSF"]:
-                    ax2.scatter(x=x[[0, 2, 3, 4]], y=y[[0, 2, 3, 4]], s=100, facecolor="red", alpha=0.5, marker="o", edgecolors='black', linewidths=1,
-                                zorder=10)
-                    ax2.scatter(x=x[1], y=y[1], s=100, facecolor="blue", alpha=0.5, marker="d", edgecolors='black', linewidths=1,
-                                zorder=10)
-                else:
-                    ax2.scatter(x=x, y=y, s=100, facecolor="red", alpha=0.5, marker="o",
-                                edgecolors='black', linewidths=1,
-                                zorder=10)
+                ax2.scatter(x=x, y=y, s=100, facecolor="red", alpha=0.5, marker="o", edgecolors='black', linewidths=1, zorder=10)
+                # if line_string in ["NPET"]:
+                #     ax2.scatter(x=x, y=y, s=100, facecolor="blue", alpha=0.5, marker="d",
+                #                 edgecolors='black', linewidths=1,
+                #                 zorder=10)
+                # elif line_string in ["ACSF", "TpCSF", "TCSF", "TtCSF"]:
+                #     ax2.scatter(x=x[[0, 2, 3, 4]], y=y[[0, 2, 3, 4]], s=100, facecolor="red", alpha=0.5, marker="o", edgecolors='black', linewidths=1,
+                #                 zorder=10)
+                #     ax2.scatter(x=x[1], y=y[1], s=100, facecolor="blue", alpha=0.5, marker="d", edgecolors='black', linewidths=1,
+                #                 zorder=10)
+                # else:
+                #     ax2.scatter(x=x, y=y, s=100, facecolor="red", alpha=0.5, marker="o",
+                #                 edgecolors='black', linewidths=1,
+                #                 zorder=10)
                 ax2.tick_params(axis='y', labelcolor="red", labelsize=15)
+                ylim_bottom, ylim_top = ax2.get_ylim()
+                if line_string in ["ACSF"]:
+                    ax2.set_ylim([ylim_bottom, ylim_bottom + (ylim_top - ylim_bottom) / (data[0][int(x[0] / self.T_unit)] - data[0][int(x[-1] / self.T_unit)]) * (data[0][0] - data[0][int(x[-1] / self.T_unit)])])
+                elif line_string in ["APET", "TPET", "TpCSF", "TCSF", "TtCSF"]:
+                    ax2.set_ylim([ylim_top - (ylim_top - ylim_bottom) / (data[0][int(x[0] / self.T_unit)] - data[0][int(x[-1] / self.T_unit)]) * (data[0][0] - data[0][int(x[-1] / self.T_unit)]), ylim_top])
 
         m.add_subplot(
             y_lists=np.concatenate(self.output[:len(self.output_names)], axis=0),
@@ -358,6 +373,10 @@ class ADSolver:
         print("Save flag: {}. Rest figure is saved to {}".format(save_flag, save_path_rest))
 
 
+def f_csf_rate(x, thr=1.7052845384621318, tol=0.2, p=1.0):
+    return max((x - thr * (1 + tol)) * p, (thr * (1 - tol) - x) * p, 0)
+
+
 def loss_func(params, starts_weight, ct):
     # print("calling loss_func..")
     truth = ADSolver("CN")
@@ -365,11 +384,14 @@ def loss_func(params, starts_weight, ct):
     targets = ["APET", "TPET", "NPET", "ACSF", "TpCSF", "TCSF", "TtCSF"]
     record = np.zeros(len(targets))
     for i, one_target in enumerate(targets):
-        target_points = np.asarray(ct.y[one_target])[[0, 1, 2, 3, 4]]
-        t_fixed = np.asarray([3, 6, 9, 11, 12])
-        if one_target in ["ACSF", "TpCSF", "TCSF", "TtCSF"]:  # skip the second points for all CSFs
-            target_points = target_points[[0, 2, 3, 4]]
-            t_fixed = t_fixed[[0, 2, 3, 4]]
+        target_points = np.asarray(ct.y[one_target])
+        if len(target_points) == 0:
+            record[i] = 0.0
+            continue
+        t_fixed = np.asarray(ct.x[one_target])
+        # if one_target in ["ACSF", "TpCSF", "TCSF", "TtCSF"]:  # skip the second points for all CSFs
+        #     target_points = target_points[[0, 2, 3, 4]]
+        #     t_fixed = t_fixed[[0, 2, 3, 4]]
         index_fixed = (t_fixed / truth.T_unit).astype(int)
         predict_points = np.asarray(truth.output[i][0][index_fixed])
         # print("target_points:", target_points.shape)
@@ -392,8 +414,9 @@ def loss_func(params, starts_weight, ct):
 
         # record[i] = np.mean(((predict_points - target_points) / target_points) ** 2)
         record[i] = np.mean((predict_points_scaled - target_points_scaled) ** 2)
-    record = record[[0, 1, 3, 4, 5, 6]]
-    return record  # remove NPET here
+    # record = record[[0, 1, 3, 4, 5, 6]]
+    csf_rate = f_csf_rate(np.max(truth.output[3][0]) / np.max(truth.output[6][0]))
+    return record, csf_rate  # remove NPET here
 
 
 # MyTime is only for debugging
@@ -420,25 +443,37 @@ class MyTime:
         print("count = {}; total time = {} s; avg time = {} s".format(self.count, self.sum, self.sum / self.count))
 
 
-def run(params=None, starts=None):
-    time_string = get_now_string()
+def run(params=None, starts=None, time_string=None):
+    if not time_string:
+        time_string = get_now_string()
     print("Time String (as folder name): {}".format(time_string))
 
     class_name = "CN"
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--dataset", type=str, help="dataset strategy")
+    parser.add_argument("--start", type=str, help="start strategy")
+    parser.add_argument("--generation", type=int, help="generation")
+    parser.add_argument("--pop_size", type=int, help="pop_size")
+    opt = parser.parse_args()
     ct = ConstTruth(
         csf_folder_path="data/CSF/",
-        pet_folder_path="data/PET/"
+        pet_folder_path="data/PET/",
+        dataset=opt.dataset,
     )
     truth = ADSolver(class_name, ct)
     truth.step(params, starts)
-    truth.draw(time_string=time_string)
+    loss, csf_rate_loss = loss_func(params, starts, ct)
+    print("loss: {}".format(sum(loss) + csf_rate_loss))
+    print("loss parts: {} csf match loss: {}".format(list(loss), csf_rate_loss))
+    truth.draw(time_string=time_string, given_loss=loss)
 
 
 if __name__ == "__main__":
     # run()
     ct = ConstTruth(
         csf_folder_path="data/CSF/",
-        pet_folder_path="data/PET/"
+        pet_folder_path="data/PET/",
+        dataset="all"
     )
     # record1 = loss_func(np.asarray([PARAMS[i]["init"] for i in range(PARAM_NUM)]), ct)
     # print(record1)

@@ -1,6 +1,7 @@
 import numpy as np
 import os
 import time
+import argparse
 import json
 import matplotlib.pyplot as plt
 from pymoo.core.problem import ElementwiseProblem
@@ -29,7 +30,7 @@ def toy_loss_func(x):
 
 
 class MyProblem(ElementwiseProblem):
-    def __init__(self):
+    def __init__(self, ct):
         super().__init__(n_var=PARAM_NUM + STARTS_NUM,
                          n_obj=1,
                          # n_eq_constr=1,
@@ -37,15 +38,12 @@ class MyProblem(ElementwiseProblem):
                          xl=np.asarray([PARAMS[i]["lb"] for i in range(PARAM_NUM)] + [STARTS_WEIGHTS[i]["lb"] for i in range(STARTS_NUM)]),
                          xu=np.asarray([PARAMS[i]["ub"] for i in range(PARAM_NUM)] + [STARTS_WEIGHTS[i]["ub"] for i in range(STARTS_NUM)]),
                          )
-        self.ct = ConstTruth(
-            csf_folder_path="data/CSF/",
-            pet_folder_path="data/PET/"
-        )
+        self.ct = ct
 
     def _evaluate(self, x, out, *args, **kwargs):
-        loss_all = loss_func(x[:-STARTS_NUM], x[-STARTS_NUM:], self.ct)
+        loss_all, csf_rate = loss_func(x[:-STARTS_NUM], x[-STARTS_NUM:], self.ct)
         # loss1, loss2, loss3, loss4, loss5, loss6, loss7 = iter(loss_all)
-        loss1 = np.sum(loss_all)
+        loss1 = np.sum(loss_all) + csf_rate # skip NPET
         # loss1 = np.sum(np.abs(x))
         # eq1 = np.sum(x[33: 46] - np.floor(x[33: 46]))
 
@@ -58,7 +56,26 @@ def simulate(pop_size=50, generation=100, method="GA"):
     time_string_start = get_now_string()
     t0 = time.time()
     print("[run - multi_obj] Start at {}".format(time_string_start))
-    problem = MyProblem()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--dataset", type=str, help="dataset strategy")
+    parser.add_argument("--start", type=str, help="start strategy")
+    parser.add_argument("--generation", type=int, help="generation")
+    parser.add_argument("--pop_size", type=int, help="pop_size")
+    opt = parser.parse_args()
+    if opt.generation:
+        generation = opt.generation
+    if opt.pop_size:
+        pop_size = opt.pop_size
+    print("[run - multi_obj] dataset strategy: {}".format(opt.dataset))
+    print("[run - multi_obj] start strategy: {}".format(opt.start))
+    print("[run - multi_obj] generation: {}".format(generation))
+    print("[run - multi_obj] pop_size: {}".format(pop_size))
+    ct = ConstTruth(
+        csf_folder_path="data/CSF/",
+        pet_folder_path="data/PET/",
+        dataset=opt.dataset,
+    )
+    problem = MyProblem(ct)
 
     initial_x = np.asarray([PARAMS[i]["init"] for i in range(PARAM_NUM)] + [STARTS_WEIGHTS[i]["init"] for i in range(STARTS_NUM)])  # default
 #    initial_x = np.load("saves/params_20221203_113822.npy")
@@ -145,25 +162,47 @@ def simulate(pop_size=50, generation=100, method="GA"):
         best_f = F[i:i+1]
 
 
-    folder_path = "saves/"
+    folder_path = "figure/{}/".format(time_string_start)
     if not os.path.exists(folder_path):
         os.makedirs(folder_path)
     save_path_params_x = os.path.join(folder_path, "params_{}.npy".format(time_string_start))
-    save_path_params_f = os.path.join(folder_path, "val_{}.npy".format(time_string_start))
+    # save_path_params_f = os.path.join(folder_path, "val_{}.npy".format(time_string_start))
+    save_path_params_record = os.path.join(folder_path, "settings_{}.txt".format(time_string_start))
     print("[run - multi_obj] Params shape: ", best_x.shape)
     print(best_x)
-    print("[run - multi_obj] The optimal params achieved loss = {}".format(best_f[0]))
+    # print("[run - multi_obj] The optimal params achieved loss = {}".format(best_f[0]))
     np.save(save_path_params_x, best_x)
-    np.save(save_path_params_f, best_f)
-    print("[run - multi_obj] The optimal params are saved to \"{}\" and the optimal value is saved to \"{}\".".format(save_path_params_x, save_path_params_f))
+    # np.save(save_path_params_f, best_f)
+    print("[run - multi_obj] The optimal params are saved to \"{}\".".format(save_path_params_x))
     t1 = time.time()
     time_string_end = get_now_string()
     print("[run - multi_obj] End at {0} ({1:.2f} min)".format(time_string_end, (t1 - t0) / 60.0))
 
     original_params = np.asarray([PARAMS[i]["init"] for i in range(PARAM_NUM)])
     original_starts_weights = np.asarray([STARTS_WEIGHTS[i]["init"] for i in range(STARTS_NUM)])
-    original_loss = np.sum(loss_func(original_params, original_starts_weights, problem.ct))
-    print("[run - multi_obj] Note that using the initial params loss = {}".format(original_loss))
+    old_loss_parts, old_csf_rate_loss = loss_func(original_params, original_starts_weights, ct)
+    old_loss = sum(old_loss_parts) + old_csf_rate_loss
+    print("[run - multi_obj] original loss: {}".format(old_loss))
+    print("[run - multi_obj] original loss parts: {} csf match loss: {}".format(list(old_loss_parts), old_csf_rate_loss))
+    new_loss_parts, new_csf_rate_loss = loss_func(best_x[:PARAM_NUM], best_x[-STARTS_NUM:], ct)
+    new_loss = sum(new_loss_parts) + new_csf_rate_loss
+    print("[run - multi_obj] new loss: {}".format(new_loss))
+    print("[run - multi_obj] new loss parts: {} csf match loss: {}".format(list(new_loss_parts), new_csf_rate_loss))
+
+    with open(save_path_params_record, "w") as f:
+        f.write("start time (as folder name): {}\n".format(time_string_start))
+        f.write("end time: {}\n".format(time_string_end))
+        f.write("time cost (min): {}\n".format((t1 - t0) / 60.0))
+        f.write("method: {}\n".format(method))
+        f.write("dataset strategy: {}\n".format(opt.dataset))
+        f.write("start strategy: {}\n".format(opt.start))
+        f.write("generation: {}\n".format(generation))
+        f.write("pop_size: {}\n".format(pop_size))
+        f.write("old_loss: {}\n".format(old_loss))
+        f.write("new_loss: {}\n".format(new_loss))
+    run(best_x[:PARAM_NUM], best_x[-STARTS_NUM:], time_string_start)
+    # original_loss = np.sum(loss) + csf_rate_loss
+    # print("[run - multi_obj] Note that using the initial params loss = {}".format(original_loss))
 
     # plt.figure(figsize=(7, 5))
     # plt.scatter(F[:, 0], F[:, 1], s=30, facecolors='none', edgecolors='blue')

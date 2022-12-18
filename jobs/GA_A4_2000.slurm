@@ -1,0 +1,13 @@
+#!/bin/bash
+#SBATCH --job-name="GA_A4_2000"
+#SBATCH --partition=small
+#SBATCH --nodes=1
+#SBATCH --time=2-00:00:00
+#SBATCH --mem=64GB
+#SBATCH --mail-user=xue20@wfu.edu
+#SBATCH --mail-type=BEGIN,END,FAIL
+#SBATCH --output="jobs_oe/GA_A4_2000-%j.o"
+#SBATCH --error="jobs_oe/GA_A4_2000-%j.e"
+echo $(pwd) > "jobs/pwd.txt"
+source venv/bin/activate
+python test_nsga.py --generation 2000 --dataset chosen_0 --start ranged --pop_size 100

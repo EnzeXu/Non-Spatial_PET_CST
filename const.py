@@ -1,4 +1,4 @@
-
+import argparse
 LABEL_LIST = ["CN", "SMC", "EMCI", "LMCI", "AD"]
 LABEL_ID = {
     "CN": 0,
@@ -14,85 +14,175 @@ LOWFOLD = 0.1
 STARTS_NUM = 11
 STARTS_NAME_LIST = ["Am", "Ao", "Af", "ACSF", "Tm", "Tp", "To", "Tf", "TCSF", "TpCSF", "N"]
 
-STARTS_WEIGHTS = [
-    {
-        "id": 0,
-        "name": "Am",
-        "init": 1.000,
-        "lb": 0.10,
-        "ub": 10.00,
-    },
-    {
-        "id": 1,
-        "name": "Ao",
-        "init": 1.000,
-        "lb": 0.10,
-        "ub": 10.00,
-    },
-    {
-        "id": 2,
-        "name": "Af",
-        "init": 1.000,
-        "lb": 0.10,
-        "ub": 10.00,
-    },
-    {
-        "id": 3,
-        "name": "ACSF",
-        "init": 1.000,
-        "lb": 0.10,
-        "ub": 10.00,
-    },
-    {
-        "id": 4,
-        "name": "Tm",
-        "init": 1.000,
-        "lb": 0.10,
-        "ub": 10.00,
-    },
-    {
-        "id": 5,
-        "name": "Tp",
-        "init": 1.000,
-        "lb": 0.10,
-        "ub": 10.00,
-    },
-    {
-        "id": 6,
-        "name": "To",
-        "init": 1.000,
-        "lb": 0.10,
-        "ub": 10.00,
-    },
-    {
-        "id": 7,
-        "name": "Tf",
-        "init": 1.000,
-        "lb": 0.10,
-        "ub": 10.00,
-    },
-    {
-        "id": 8,
-        "name": "TCSF",
-        "init": 1.000,
-        "lb": 0.10,
-        "ub": 10.00,
-    },
-    {
-        "id": 9,
-        "name": "TpCSF",
-        "init": 1.000,
-        "lb": 0.10,
-        "ub": 10.00,
-    },
-    {
-        "id": 10,
-        "name": "N",
-        "init": 1.000,
-        "lb": 0.10,
-        "ub": 10.00,
-    },
-]
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--dataset", type=str, help="dataset strategy")
+parser.add_argument("--start", type=str, help="start strategy")
+parser.add_argument("--generation", type=int, help="generation")
+parser.add_argument("--pop_size", type=int, help="pop_size")
+opt = parser.parse_args()
+
+assert opt.start in ["fixed", "ranged"]
+if opt.start == "fixed":
+    STARTS_WEIGHTS = [
+        {
+            "id": 0,
+            "name": "Am",
+            "init": 1.000,
+            "lb": 1.000,
+            "ub": 1.000,
+        },
+        {
+            "id": 1,
+            "name": "Ao",
+            "init": 1.000,
+            "lb": 1.000,
+            "ub": 1.000,
+        },
+        {
+            "id": 2,
+            "name": "Af",
+            "init": 1.000,
+            "lb": 1.000,
+            "ub": 1.000,
+        },
+        {
+            "id": 3,
+            "name": "ACSF",
+            "init": 1.000,
+            "lb": 1.000,
+            "ub": 1.000,
+        },
+        {
+            "id": 4,
+            "name": "Tm",
+            "init": 1.000,
+            "lb": 1.000,
+            "ub": 1.000,
+        },
+        {
+            "id": 5,
+            "name": "Tp",
+            "init": 1.000,
+            "lb": 1.000,
+            "ub": 1.000,
+        },
+        {
+            "id": 6,
+            "name": "To",
+            "init": 1.000,
+            "lb": 1.000,
+            "ub": 1.000,
+        },
+        {
+            "id": 7,
+            "name": "Tf",
+            "init": 1.000,
+            "lb": 1.000,
+            "ub": 1.000,
+        },
+        {
+            "id": 8,
+            "name": "TCSF",
+            "init": 1.000,
+            "lb": 1.000,
+            "ub": 1.000,
+        },
+        {
+            "id": 9,
+            "name": "TpCSF",
+            "init": 1.000,
+            "lb": 1.000,
+            "ub": 1.000,
+        },
+        {
+            "id": 10,
+            "name": "N",
+            "init": 1.000,
+            "lb": 1.000,
+            "ub": 1.000,
+        },
+    ]
+else:
+    STARTS_WEIGHTS = [
+        {
+            "id": 0,
+            "name": "Am",
+            "init": 1.000,
+            "lb": 1.000 - 0.3,
+            "ub": 1.000 + 0.3,
+        },
+        {
+            "id": 1,
+            "name": "Ao",
+            "init": 1.000,
+            "lb": 1.000 - 0.3,
+            "ub": 1.000 + 0.3,
+        },
+        {
+            "id": 2,
+            "name": "Af",
+            "init": 1.000,
+            "lb": 1.000 - 0.058705655763439606,
+            "ub": 1.000,
+        },
+        {
+            "id": 3,
+            "name": "ACSF",
+            "init": 1.000,
+            "lb": 1.000,
+            "ub": 1.000 + 0.14633390295437004,
+        },
+        {
+            "id": 4,
+            "name": "Tm",
+            "init": 1.000,
+            "lb": 1.000 - 0.3,
+            "ub": 1.000 + 0.3,
+        },
+        {
+            "id": 5,
+            "name": "Tp",
+            "init": 1.000,
+            "lb": 1.000 - 0.3,
+            "ub": 1.000 + 0.3,
+        },
+        {
+            "id": 6,
+            "name": "To",
+            "init": 1.000,
+            "lb": 1.000 - 0.3,
+            "ub": 1.000 + 0.3,
+        },
+        {
+            "id": 7,
+            "name": "Tf",
+            "init": 1.000,
+            "lb": 1.000 - 0.1106672083840519,
+            "ub": 1.000,
+        },
+        {
+            "id": 8,
+            "name": "TCSF",
+            "init": 1.000,
+            "lb": 1.000 - 0.3034193899069153,
+            "ub": 1.000,
+        },
+        {
+            "id": 9,
+            "name": "TpCSF",
+            "init": 1.000,
+            "lb": 1.000 - 0.20798415143947105,
+            "ub": 1.000,
+        },
+        {
+            "id": 10,
+            "name": "N",
+            "init": 1.000,
+            "lb": 1.000 - 0.01991284446769561,
+            "ub": 1.000,
+        },
+    ]
 
 # STARTS_WEIGHTS = [
 #     {
