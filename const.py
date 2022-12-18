@@ -175,12 +175,12 @@ STARTS_WEIGHTS = [
 # ]
 
 PARAM_NAME_LIST = ["k_p1Am", "k_p2Am", "k_dAm", "k_diA", "k_cA", "k_sA", "k_dAo", "k_yA", "k_pTm", "k_dTm", "k_ph1", "k_ph2", "k_deph", "k_diT", "k_cT", "k_sT", "k_dTp", "k_sTp", "k_dTo", "k_yT", "k_yTp", "k_AN", "k_TN", "k_a1A", "k_a2A", "k_a1T", "k_a2T", "K_mTA", "K_mAT", "K_mAN", "K_mTN", "K_mT2", "K_mA2", "n_TA", "n_cA", "n_AT", "n_cT", "n_cTp", "n_cTo", "n_AN", "n_TN", "n_a1A", "n_a2A", "n_a1T", "n_a2T", "n_a1Tp", "d_Am", "d_Ao", "d_Tm", "d_Tp", "d_To", ]
-
+#PARAM_NAME_LIST = ["k_p1Am", "k_p2Am", "k_dAm", "k_diA", "k_cA", "k_sA", "k_dAo", "k_yA", "k_pTm", "k_dTm", "k_ph1", "k_ph2", "k_deph", "k_diT", "k_cT", "k_sT", "k_dTp", "k_sTp", "k_dTo", "k_yT", "k_yTp", "k_AN", "k_TN", "k_a1A", "k_a2A", "k_a1T", "k_a2T", "K_mTA", "K_mAT", "K_mAN", "K_mTN", "K_mT2", "K_mA2", "n_TA", "n_cA", "n_AT", "n_cT", "n_cTp", "n_cTo", "n_AN", "n_TN", "n_a1A", "n_a2A", "n_a1T", "n_a2T", "n_a1Tp", "K_cA", "d_Ao", "d_Tm", "d_Tp", "d_To", ]
 PARAMS = [
     {
         "id": 0,
         "name": "k_p1Am",
-        "init": 0.001,
+        "init": 0.002,
         "lb": 0.0002 * LOWFOLD,#0.5,
         "ub": 0.005 * UPFOLD#2.0
     },
@@ -201,16 +201,16 @@ PARAMS = [
     {
         "id": 3,
         "name": "k_diA",
-        "init": 0.2,#1.0,
+        "init": 0.2,#0.2,#1.0,
         "lb": 0.2 * LOWFOLD,
         "ub": 5.0 * UPFOLD
     },
     {
         "id": 4,
         "name": "k_cA",
-        "init": 10,#15.0,
-        "lb": 3.0 * LOWFOLD,
-        "ub": 30.0 * UPFOLD
+        "init": 0.1,#10,#15.0,
+        "lb": 0.1 * LOWFOLD,
+        "ub": 3.0 * UPFOLD
     },
     {
         "id": 5,
@@ -500,6 +500,11 @@ PARAMS = [
         "ub": 12.0
     },
     {
+#        "id": 46,
+#        "name": "K_cA",#"d_Am",
+#        "init": 0.5,
+#        "lb": 0.05,
+#        "ub": 5,
         "id": 46,
         "name": "d_Am",
         "init": 1.0,
@@ -507,6 +512,11 @@ PARAMS = [
         "ub": 12.0,
     },
     {
+#        "id": 47,
+#        "name": "K_ACSF",#"d_Ao",
+#        "init": 0.5,#1.0,
+#        "lb": 0.5 * 0.5,#1.0,
+#        "ub": 0.5 * 2,#1.0,
         "id": 47,
         "name": "d_Ao",
         "init": 1.0,
