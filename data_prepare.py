@@ -62,7 +62,7 @@ def one_time_deal_PET_specified(APOE, gender, data_path_list=None):
         data_a = data_a[data_a["APOE4"] == 0]
         data_t = data_t[data_t["APOE4"] == 0]
         data_n = data_n[data_n["APOE4"] == 0]
-    elif APOE == "one/two":
+    elif APOE == "one_two":
         data_a = data_a[(data_a["APOE4"] == 1) | (data_a["APOE4"] == 2)]
         data_t = data_t[(data_t["APOE4"] == 1) | (data_t["APOE4"] == 2)]
         data_n = data_n[(data_n["APOE4"] == 1) | (data_n["APOE4"] == 2)]
@@ -268,7 +268,7 @@ def one_time_deal_CSF_specified(APOE, gender, csf_path=None, dictionary_pickle_p
             avg = collection[LABEL_ID[one_key], :] / counts[LABEL_ID[one_key]]
             np.save("data/CSF_specified/CSF_APOE={}_gender={}_{}".format(APOE, gender, one_key), avg)
             print("CSF_{} counts={} avg={}".format(one_key, counts[LABEL_ID[one_key]], avg))
-    print("CSF counts:", counts)
+    print("CSF counts = {}:".format(np.sum(counts)), counts)
     print()
 
 
