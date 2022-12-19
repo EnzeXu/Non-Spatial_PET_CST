@@ -16,7 +16,9 @@ python {1} {2}
 
 
 def one_slurm(job_name, python_name, kwargs, draft=draft):
-    with open("jobs/{}.slurm".format(job_name), "w") as f:
+    path = "jobs/{}.slurm".format(job_name)
+    print("building {}".format(path))
+    with open(path, "w") as f:
         f.write(draft.format(
             job_name,
             python_name,
@@ -24,16 +26,25 @@ def one_slurm(job_name, python_name, kwargs, draft=draft):
         ))
 
 
+
 def one_time_build_A():
     plans = [
+        # ["A1", 1000, "all", "fixed", 100],
+        # ["A1", 2000, "all", "fixed", 100],
+        # ["A2", 1000, "all", "ranged", 100],
+        # ["A2", 2000, "all", "ranged", 100],
+        # ["A3", 1000, "chosen_0", "fixed", 100],
+        # ["A3", 2000, "chosen_0", "fixed", 100],
+        # ["A4", 1000, "chosen_0", "ranged", 100],
+        # ["A4", 2000, "chosen_0", "ranged", 100],
         ["A1", 1000, "all", "fixed", 100],
-        ["A1", 2000, "all", "fixed", 100],
+        ["A1", 3000, "all", "fixed", 100],
+        ["A1", 5000, "all", "fixed", 100],
+        ["A1", 7000, "all", "fixed", 100],
         ["A2", 1000, "all", "ranged", 100],
-        ["A2", 2000, "all", "ranged", 100],
-        ["A3", 1000, "chosen_0", "fixed", 100],
-        ["A3", 2000, "chosen_0", "fixed", 100],
-        ["A4", 1000, "chosen_0", "ranged", 100],
-        ["A4", 2000, "chosen_0", "ranged", 100],
+        ["A2", 3000, "all", "ranged", 100],
+        ["A2", 5000, "all", "ranged", 100],
+        ["A2", 7000, "all", "ranged", 100],
     ]
     dic = dict()
     for one_plan in plans:

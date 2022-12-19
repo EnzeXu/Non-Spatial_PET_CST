@@ -44,11 +44,17 @@ class ConstTruth:
     def __init__(self, **params):
         assert "csf_folder_path" in params and "pet_folder_path" in params, "please provide the save folder paths"
         assert "dataset" in params
+        assert "start" in params
+        self.params = params
         csf_folder_path, pet_folder_path = params["csf_folder_path"], params["pet_folder_path"]
         label_list = LABEL_LIST  # [[0, 2, 3, 4]]  # skip the second nodes (SMC)
         self.class_num = len(label_list)
         if "x" not in params:
-            self.x_all = np.asarray([3, 6, 9, 11, 12])
+            assert params["start"] in ["ranged", "fixed"]
+            if params["start"] == "ranged":
+                self.x_all = np.asarray([3, 6, 9, 11, 12])
+            else:
+                self.x_all = np.asarray([0, 3, 6, 8, 9])
         else:
             self.x_all = np.asarray(params.get("x"))
         self.y = dict()
@@ -203,10 +209,10 @@ class ADSolver:
         # n_a2T = 2.0
         # n_a1Tp = 2.0
 
-        d_Am = 1.0
+        d_Am = 1.0  # 5.0
         d_Ao = 1.0
-        d_Tm = 1.0
-        d_Tp = 1.0
+        d_Tm = 1.0  # 5.0
+        d_Tp = 1.0  # 5.0
         d_To = 1.0
 
         sum_func = np.sum
@@ -297,7 +303,7 @@ class ADSolver:
                              save_path=save_path_target, save_dpi=400)
         for i, (name, data, color, line_string) in enumerate(zip(self.output_names, self.output[:len(self.output_names)], self.colors[:len(self.output_names)], self.lines)):
             ax = m.add_subplot(
-                y_lists=data,
+                y_lists=data[:, :-int(3.0 / self.T_unit)] if self.const_truth.params["start"] == "fixed" else data,
                 x_list=self.t,
                 color_list=[color],
                 line_style_list=["solid"],
@@ -306,6 +312,7 @@ class ADSolver:
                 line_width=2,
             )
             # ax.set_ylim([np.min(data[0]), np.max(data[0])])
+
             if self.const_truth:
                 x = self.const_truth.x[line_string]
                 y = self.const_truth.y[line_string]
@@ -332,6 +339,7 @@ class ADSolver:
                     ax2.set_ylim([ylim_bottom, ylim_bottom + (ylim_top - ylim_bottom) / (data[0][int(x[0] / self.T_unit)] - data[0][int(x[-1] / self.T_unit)]) * (data[0][0] - data[0][int(x[-1] / self.T_unit)])])
                 elif line_string in ["APET", "TPET", "TpCSF", "TCSF", "TtCSF"]:
                     ax2.set_ylim([ylim_top - (ylim_top - ylim_bottom) / (data[0][int(x[0] / self.T_unit)] - data[0][int(x[-1] / self.T_unit)]) * (data[0][0] - data[0][int(x[-1] / self.T_unit)]), ylim_top])
+
 
         m.add_subplot(
             y_lists=np.concatenate(self.output[:len(self.output_names)], axis=0),
@@ -459,6 +467,7 @@ def run(params=None, starts=None, time_string=None):
         csf_folder_path="data/CSF/",
         pet_folder_path="data/PET/",
         dataset=opt.dataset,
+        start=opt.start,
     )
     truth = ADSolver(class_name, ct)
     truth.step(params, starts)

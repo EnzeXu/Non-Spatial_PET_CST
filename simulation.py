@@ -74,6 +74,7 @@ def simulate(pop_size=50, generation=100, method="GA"):
         csf_folder_path="data/CSF/",
         pet_folder_path="data/PET/",
         dataset=opt.dataset,
+        start=opt.start,
     )
     problem = MyProblem(ct)
 

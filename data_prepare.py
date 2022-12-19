@@ -381,8 +381,8 @@ if __name__ == "__main__":
     # # one_time_deal_CSF()
     # # one_time_deal_PET()
     # # one_time_deal_PET_all()
-    # one_time_compare("PET-A_full", "PET-A", ["PET-A_full_{}", "PET-A_{}"], "PET_A")
-    # one_time_compare("PET-N_full", "PET-N", ["PET-N_full_{}", "PET-N_{}"], "PET_N")
+    one_time_compare("PET-A_full", "PET-A", ["PET-A_full_{}", "PET-A_{}"], "PET_A")
+    one_time_compare("PET-N_full", "PET-N", ["PET-N_full_{}", "PET-N_{}"], "PET_N")
     # one_time_build_ptid_dictionary_specifed()
     # for one_APOE in ["all", "zero", "one_two"]:
     #     for one_gender in ["all", "male", "female"]:
@@ -390,14 +390,14 @@ if __name__ == "__main__":
     # for one_APOE in ["all", "zero", "one_two"]:
     #     for one_gender in ["all", "male", "female"]:
     #         one_time_deal_CSF_specified(APOE=one_APOE, gender=one_gender)
-    for one_APOE in ["all", "zero", "one_two"]:
-        for one_gender in ["all", "male", "female"]:
-            ct = ConstTruthSpecified(
-                csf_folder_path="data/CSF_specified/",
-                pet_folder_path="data/PET_specified/",
-                dataset="all",
-                APOE=one_APOE,
-                gender=one_gender
-            )
-            one_time_plot_ct(ct)
+    # for one_APOE in ["all", "zero", "one_two"]:
+    #     for one_gender in ["all", "male", "female"]:
+    #         ct = ConstTruthSpecified(
+    #             csf_folder_path="data/CSF_specified/",
+    #             pet_folder_path="data/PET_specified/",
+    #             dataset="all",
+    #             APOE=one_APOE,
+    #             gender=one_gender
+    #         )
+    #         one_time_plot_ct(ct)
     pass
