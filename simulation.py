@@ -201,6 +201,19 @@ def simulate(pop_size=50, generation=100, method="GA"):
         f.write("pop_size: {}\n".format(pop_size))
         f.write("old_loss: {}\n".format(old_loss))
         f.write("new_loss: {}\n".format(new_loss))
+    with open("simulation_record.txt", "a") as f:
+        f.write("{0}, {1}, {2:.4f}, {3}, {4}, {5}, {6}, {7}, {8:.12f}, {9:.12f}\n".format(
+            time_string_start,
+            time_string_end,
+            (t1 - t0) / 60.0,
+            method,
+            opt.dataset,
+            opt.start,
+            generation,
+            pop_size,
+            old_loss,
+            new_loss,
+        ))
     run(best_x[:PARAM_NUM], best_x[-STARTS_NUM:], time_string_start)
     # original_loss = np.sum(loss) + csf_rate_loss
     # print("[run - multi_obj] Note that using the initial params loss = {}".format(original_loss))

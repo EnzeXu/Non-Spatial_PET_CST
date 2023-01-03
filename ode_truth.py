@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 import time
+from datetime import datetime
 import argparse
 from scipy.integrate import odeint
 from tqdm import tqdm
@@ -28,7 +29,7 @@ PET-N counts: [92. 43. 80. 39. 11.]
 
 
 def get_now_string():
-    return time.strftime("%Y%m%d_%H%M%S", time.localtime(time.time()))
+    return datetime.now().strftime("%Y%m%d_%H%M%S_%f")
 
 
 def numpy_safe_pow(x, n):
