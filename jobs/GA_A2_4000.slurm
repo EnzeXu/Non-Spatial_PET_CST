@@ -1,9 +1,9 @@
 #!/bin/bash
 #SBATCH --job-name="GA_A2_4000"
-#SBATCH --partition=small
-#SBATCH --nodes=1
-#SBATCH --time=0-05:00:00
-#SBATCH --mem=16GB
+#SBATCH --partition=medium
+#SBATCH --nodes=8
+#SBATCH --time=1-00:00:00
+#SBATCH --mem=20GB
 #SBATCH --mail-user=xue20@wfu.edu
 #SBATCH --mail-type=BEGIN,END,FAIL
 #SBATCH --output="jobs_oe/GA_A2_4000-%j.o"

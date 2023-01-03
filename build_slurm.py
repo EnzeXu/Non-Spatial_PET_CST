@@ -1,9 +1,9 @@
 draft = """#!/bin/bash
 #SBATCH --job-name="{0}"
-#SBATCH --partition=small
-#SBATCH --nodes=1
-#SBATCH --time=0-05:00:00
-#SBATCH --mem=16GB
+#SBATCH --partition=medium
+#SBATCH --nodes=8
+#SBATCH --time=1-00:00:00
+#SBATCH --mem=20GB
 #SBATCH --mail-user=xue20@wfu.edu
 #SBATCH --mail-type=BEGIN,END,FAIL
 #SBATCH --output="jobs_oe/{0}-%j.o"
@@ -12,7 +12,6 @@ echo $(pwd) > "jobs/pwd.txt"
 source venv/bin/activate
 python {1} {2}
 """
-
 
 
 def one_slurm(job_name, python_name, kwargs, draft=draft):
@@ -53,14 +52,18 @@ def one_time_build_A():
         # ["A2", 1500, "all", "ranged", 100],
         # ["A2", 1750, "all", "ranged", 100],
         # ["A2", 2000, "all", "ranged", 100],
-        ["A1", 3500, "all", "fixed", 100],
+        ["A1", 1000, "all", "fixed", 100],
+        ["A1", 2000, "all", "fixed", 100],
+        ["A1", 3000, "all", "fixed", 100],
         ["A1", 4000, "all", "fixed", 100],
-        ["A1", 4500, "all", "fixed", 100],
         ["A1", 5000, "all", "fixed", 100],
-        ["A2", 2250, "all", "ranged", 100],
-        ["A2", 2500, "all", "ranged", 100],
-        ["A2", 2750, "all", "ranged", 100],
+        ["A1", 6000, "all", "fixed", 100],
+        ["A2", 1000, "all", "ranged", 100],
+        ["A2", 2000, "all", "ranged", 100],
         ["A2", 3000, "all", "ranged", 100],
+        ["A2", 4000, "all", "ranged", 100],
+        ["A2", 5000, "all", "ranged", 100],
+        ["A2", 6000, "all", "ranged", 100],
     ]
     dic = dict()
     for one_plan in plans:
