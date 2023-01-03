@@ -209,11 +209,11 @@ class ADSolver:
         # n_a2T = 2.0
         # n_a1Tp = 2.0
 
-        d_Am = 1.0  # 5.0
-        d_Ao = 1.0
-        d_Tm = 1.0  # 5.0
-        d_Tp = 1.0  # 5.0
-        d_To = 1.0
+        d_Am = 0.0  # 5.0
+        d_Ao = 0.0
+        d_Tm = 0.0  # 5.0
+        d_Tp = 0.0  # 5.0
+        d_To = 0.0
 
         sum_func = np.sum
         matmul_func = my_matmul  # np.matmul
