@@ -6,7 +6,7 @@ from const import LABEL_ID
 
 class Config:
     N_dim = 160
-    L = np.zeros(N_dim)
+    L = np.zeros([N_dim, N_dim])
 
 
 class Start:
