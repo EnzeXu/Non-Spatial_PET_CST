@@ -8,3 +8,4 @@ figure_slides/*
 logs/*
 venv/*
 test.py
+simulation_record.txt
