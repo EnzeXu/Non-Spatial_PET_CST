@@ -303,8 +303,9 @@ class ADSolver:
                              save_flag=save_flag,
                              save_path=save_path_target, save_dpi=400)
         for i, (name, data, color, line_string) in enumerate(zip(self.output_names, self.output[:len(self.output_names)], self.colors[:len(self.output_names)], self.lines)):
+            y_lists = data[:, :-int(3.0 / self.T_unit)] if self.const_truth.params["start"] == "fixed" else data
             ax = m.add_subplot(
-                y_lists=data[:, :-int(3.0 / self.T_unit)] if self.const_truth.params["start"] == "fixed" else data,
+                y_lists=y_lists,
                 x_list=self.t,
                 color_list=[color],
                 line_style_list=["solid"],
@@ -312,6 +313,7 @@ class ADSolver:
                 legend_list=[name],
                 line_width=2,
             )
+            ax.scatter(x=self.const_truth.x[line_string], y=y_lists[0][(self.const_truth.x[line_string] / self.T_unit).astype(int)], s=100, facecolor=color, alpha=1.0, marker="x", linewidths=3, zorder=10)
             # ax.set_ylim([np.min(data[0]), np.max(data[0])])
 
             if self.const_truth:
@@ -320,7 +322,7 @@ class ADSolver:
                 # print(len(x), len(y))
                 ax2 = ax.twinx()
                 ax2.set_ylabel("truth points val", fontsize=15)
-                ax2.scatter(x=x, y=y, s=100, facecolor="red", alpha=0.5, marker="o", edgecolors='black', linewidths=1, zorder=10)
+                ax2.scatter(x=x, y=y, s=100, facecolor="black", alpha=0.5, marker="o", edgecolors='black', linewidths=1, zorder=10)
                 # if line_string in ["NPET"]:
                 #     ax2.scatter(x=x, y=y, s=100, facecolor="blue", alpha=0.5, marker="d",
                 #                 edgecolors='black', linewidths=1,
@@ -335,11 +337,16 @@ class ADSolver:
                 #                 edgecolors='black', linewidths=1,
                 #                 zorder=10)
                 ax2.tick_params(axis='y', labelcolor="red", labelsize=15)
-                ylim_bottom, ylim_top = ax2.get_ylim()
-                if line_string in ["ACSF"]:
-                    ax2.set_ylim([ylim_bottom, ylim_bottom + (ylim_top - ylim_bottom) / (data[0][int(x[0] / self.T_unit)] - data[0][int(x[-1] / self.T_unit)]) * (data[0][0] - data[0][int(x[-1] / self.T_unit)])])
-                elif line_string in ["APET", "TPET", "TpCSF", "TCSF", "TtCSF"]:
-                    ax2.set_ylim([ylim_top - (ylim_top - ylim_bottom) / (data[0][int(x[0] / self.T_unit)] - data[0][int(x[-1] / self.T_unit)]) * (data[0][0] - data[0][int(x[-1] / self.T_unit)]), ylim_top])
+                if self.const_truth.params["start"] == "ranged":
+                    ylim_bottom, ylim_top = ax2.get_ylim()
+                    index_fixed = (x / self.T_unit).astype(int)
+                    curve_data = data[0][index_fixed]
+                    if line_string in ["ACSF"]:
+                        ax2.set_ylim([ylim_bottom, ylim_bottom + (ylim_top - ylim_bottom) / (np.max(curve_data) - np.min(curve_data)) * (np.max(data[0]) - np.min(curve_data))])
+                        # ax2.set_ylim([ylim_bottom, ylim_bottom + (ylim_top - ylim_bottom) / (data[0][int(x[0] / self.T_unit)] - data[0][int(x[-1] / self.T_unit)]) * (data[0][0] - data[0][int(x[-1] / self.T_unit)])])
+                    elif line_string in ["APET", "TPET", "TpCSF", "TCSF", "TtCSF"]:
+                        ax2.set_ylim([ylim_top - (ylim_top - ylim_bottom) / (np.max(curve_data) - np.min(curve_data)) * (np.max(curve_data) - np.min(data[0])), ylim_top])
+                        # ax2.set_ylim([ylim_top - (ylim_top - ylim_bottom) / (data[0][int(x[0] / self.T_unit)] - data[0][int(x[-1] / self.T_unit)]) * (data[0][0] - data[0][int(x[-1] / self.T_unit)]), ylim_top])
 
 
         m.add_subplot(
