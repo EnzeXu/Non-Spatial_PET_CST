@@ -270,21 +270,21 @@ PARAMS = [
     {
         "id": 0,
         "name": "k_p1Am",
-        "init": 0.002,
-        "lb": 0.0002 * LOWFOLD,#0.5,
-        "ub": 0.005 * UPFOLD#2.0
+        "init": 0.1,
+        "lb": 0.02 * LOWFOLD,#0.5,
+        "ub": 0.1 * UPFOLD#2.0
     },
     {
         "id": 1,
         "name": "k_p2Am",
-        "init": 0.001,#0.0,
+        "init": 0.1,#0.0,
         "lb": 0.0,
-        "ub": 0.01 
+        "ub": 1
     },
     {
         "id": 2,
         "name": "k_dAm",
-        "init": 0.15,#0.08,
+        "init": 0.1,#0.08,
         "lb": 0.016 * LOWFOLD,
         "ub": 0.4 * UPFOLD
     },
@@ -298,7 +298,7 @@ PARAMS = [
     {
         "id": 4,
         "name": "k_cA",
-        "init": 0.1,#10,#15.0,
+        "init": 0.5,#10,#15.0,
         "lb": 0.1 * LOWFOLD,
         "ub": 3.0 * UPFOLD
     },
@@ -306,7 +306,7 @@ PARAMS = [
         "id": 5,
         "name": "k_sA",
         "init": 0.003,#0.025,
-        "lb": 0.005 * LOWFOLD,
+        "lb": 0.001 * LOWFOLD,
         "ub": 0.125 * UPFOLD
     },
     {
@@ -326,28 +326,28 @@ PARAMS = [
     {
         "id": 8,
         "name": "k_pTm",
-        "init": 0.001,
+        "init": 0.3,
         "lb": 0.0002 * LOWFOLD,
-        "ub": 0.005 * UPFOLD
+        "ub": 0.5 * UPFOLD
     },
     {
         "id": 9,
         "name": "k_dTm",
-        "init": 0.5,
+        "init": 0.1,
         "lb": 0.1 * LOWFOLD,
         "ub": 2.5 * UPFOLD
     },
     {
         "id": 10,
         "name": "k_ph1",
-        "init": 0.5,
+        "init": 4,
         "lb": 0.1 * LOWFOLD,
-        "ub": 2.5 * UPFOLD
+        "ub": 4 * UPFOLD
     },
     {
         "id": 11,
         "name": "k_ph2",
-        "init": 2.0,
+        "init": 4.0,
         "lb": 0.4 * LOWFOLD,
         "ub": 10.0 * UPFOLD
     },
@@ -355,8 +355,8 @@ PARAMS = [
         "id": 12,
         "name": "k_deph",
         "init": 1.0,#6.0,
-        "lb": 1.2 * LOWFOLD,
-        "ub": 30.0 * UPFOLD
+        "lb": 1.0 * LOWFOLD,
+        "ub": 10.0 * UPFOLD
     },
     {
         "id": 13,
@@ -368,21 +368,21 @@ PARAMS = [
     {
         "id": 14,
         "name": "k_cT",
-        "init": 0.045,#0.045,
+        "init": 0.4,#0.045,
         "lb": 0.009 * LOWFOLD,
-        "ub": 0.225 * UPFOLD
+        "ub": 0.4 * UPFOLD
     },
     {
         "id": 15,
         "name": "k_sT",
         "init": 1,#4.0,
-        "lb": 0.8 * LOWFOLD,
+        "lb": 1.0 * LOWFOLD,
         "ub": 20.0 * UPFOLD
     },
     {
         "id": 16,
         "name": "k_dTp",
-        "init": 0.1,
+        "init": 0.05,
         "lb": 0.02 * LOWFOLD,
         "ub": 0.5 * UPFOLD
     },
@@ -459,9 +459,9 @@ PARAMS = [
     {
         "id": 27,
         "name": "K_mTA",
-        "init": 1e-10,
+        "init": 1e-8,
         "lb": 2e-11 * LOWFOLD,
-        "ub": 5e-10 * UPFOLD
+        "ub": 5e-8 * UPFOLD
     },
     {
         "id": 28,
@@ -474,29 +474,29 @@ PARAMS = [
         "id": 29,
         "name": "K_mAN",
         "init": 1e-08,
-        "lb": 2e-09 * LOWFOLD,
-        "ub": 5e-08 * UPFOLD
+        "lb": 1e-09 * LOWFOLD,
+        "ub": 1e-07 * UPFOLD
     },
     {
         "id": 30,
         "name": "K_mTN",
         "init": 1e-12,
         "lb": 2e-13 * LOWFOLD,
-        "ub": 5e-12 * UPFOLD
+        "ub": 5e-11 * UPFOLD
     },
     {
         "id": 31,
         "name": "K_mT2",
         "init": 1.6e-12,
         "lb": 3e-13 * LOWFOLD,
-        "ub": 8e-12 * UPFOLD
+        "ub": 8e-11 * UPFOLD
     },
     {
         "id": 32,
         "name": "K_mA2",
         "init": 1e-08,
         "lb": 2e-09 * LOWFOLD,
-        "ub": 5e-08 * UPFOLD
+        "ub": 5e-07 * UPFOLD
     },
     {
         "id": 33,
@@ -597,9 +597,9 @@ PARAMS = [
 #        "ub": 5,
         "id": 46,
         "name": "d_Am",
-        "init": 0.0,
-        "lb": 0.0,
-        "ub": 0.0,
+        "init": 1.0,
+        "lb": 1.0,
+        "ub": 12.0,
     },
     {
 #        "id": 47,
@@ -609,30 +609,30 @@ PARAMS = [
 #        "ub": 0.5 * 2,#1.0,
         "id": 47,
         "name": "d_Ao",
-        "init": 0.0,
-        "lb": 0.0,
-        "ub": 0.0,
+        "init": 1.0,
+        "lb": 1.0,
+        "ub": 1.0,
     },
     {
         "id": 48,
         "name": "d_Tm",
-        "init": 0.0,
-        "lb": 0.0,
-        "ub": 0.0,
+        "init": 1.0,
+        "lb": 1.0,
+        "ub": 1.0,
     },
     {
         "id": 49,
         "name": "d_Tp",
-        "init": 0.0,
-        "lb": 0.0,
-        "ub": 0.0,
+        "init": 1.0,
+        "lb": 1.0,
+        "ub": 1.0,
     },
     {
         "id": 50,
         "name": "d_To",
-        "init": 0.0,
-        "lb": 0.0,
-        "ub": 0.0,
+        "init": 1.0,
+        "lb": 1.0,
+        "ub": 1.0,
     }
 ]
 
