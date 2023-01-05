@@ -168,7 +168,12 @@ def simulate(pop_size=50, generation=100, method="GA"):
         os.makedirs(folder_path)
     save_path_params_x = os.path.join(folder_path, "params_{}.npy".format(time_string_start))
     # save_path_params_f = os.path.join(folder_path, "val_{}.npy".format(time_string_start))
-    save_path_params_record = os.path.join(folder_path, "settings_{}.txt".format(time_string_start))
+    save_path_params_record = os.path.join(folder_path, "settings_{0}_{1}_{2}_{3}.txt".format(
+        time_string_start,
+        opt.start,
+        opt.dataset,
+        generation
+    ))
     print("[run - multi_obj] Params shape: ", best_x.shape)
     print(best_x)
     # print("[run - multi_obj] The optimal params achieved loss = {}".format(best_f[0]))
