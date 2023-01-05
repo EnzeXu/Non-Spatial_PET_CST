@@ -61,6 +61,7 @@ def simulate(pop_size=50, generation=100, method="GA"):
     parser.add_argument("--start", type=str, help="start strategy")
     parser.add_argument("--generation", type=int, help="generation")
     parser.add_argument("--pop_size", type=int, help="pop_size")
+    parser.add_argument("--model_name", default="none", type=str, help="model_name")
     opt = parser.parse_args()
     if opt.generation:
         generation = opt.generation
@@ -163,7 +164,9 @@ def simulate(pop_size=50, generation=100, method="GA"):
         best_f = F[i:i+1]
 
 
-    folder_path = "figure/{}/".format(time_string_start)
+    folder_path = "figure/{0}{1}/".format(
+        "{}_".format(opt.model_name) if opt.model_name != "none" else "",
+        time_string_start)
     if not os.path.exists(folder_path):
         os.makedirs(folder_path)
     save_path_params_x = os.path.join(folder_path, "params_{}.npy".format(time_string_start))

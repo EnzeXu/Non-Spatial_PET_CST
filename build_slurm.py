@@ -52,18 +52,18 @@ def one_time_build_A():
         # ["A2", 1500, "all", "ranged", 100],
         # ["A2", 1750, "all", "ranged", 100],
         # ["A2", 2000, "all", "ranged", 100],
-        # ["A1", 1000, "all", "fixed", 100],
-        # ["A1", 2000, "all", "fixed", 100],
-        # ["A1", 3000, "all", "fixed", 100],
-        # ["A1", 4000, "all", "fixed", 100],
-        # ["A1", 5000, "all", "fixed", 100],
-        # ["A1", 6000, "all", "fixed", 100],
-        # ["A2", 1000, "all", "ranged", 100],
-        # ["A2", 2000, "all", "ranged", 100],
-        # ["A2", 3000, "all", "ranged", 100],
-        # ["A2", 4000, "all", "ranged", 100],
-        # ["A2", 5000, "all", "ranged", 100],
-        # ["A2", 6000, "all", "ranged", 100],
+        ["A1", 1000, "all", "fixed", 100],
+        ["A1", 2000, "all", "fixed", 100],
+        ["A1", 3000, "all", "fixed", 100],
+        ["A1", 4000, "all", "fixed", 100],
+        ["A1", 5000, "all", "fixed", 100],
+        ["A1", 6000, "all", "fixed", 100],
+        ["A2", 1000, "all", "ranged", 100],
+        ["A2", 2000, "all", "ranged", 100],
+        ["A2", 3000, "all", "ranged", 100],
+        ["A2", 4000, "all", "ranged", 100],
+        ["A2", 5000, "all", "ranged", 100],
+        ["A2", 6000, "all", "ranged", 100],
         ["A3", 1000, "chosen_0", "fixed", 100],
         ["A3", 2000, "chosen_0", "fixed", 100],
         ["A3", 3000, "chosen_0", "fixed", 100],
@@ -83,6 +83,7 @@ def one_time_build_A():
         dic["dataset"] = one_plan[2]
         dic["start"] = one_plan[3]
         dic["pop_size"] = one_plan[4]
+        dic["model_name"] = one_plan[0]
 
         one_slurm(
             "GA_{}_{}".format(one_plan[0], one_plan[1]),
