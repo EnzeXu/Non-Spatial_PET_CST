@@ -470,6 +470,7 @@ def run(params=None, starts=None, time_string=None):
     parser.add_argument("--start", type=str, help="start strategy")
     parser.add_argument("--generation", type=int, help="generation")
     parser.add_argument("--pop_size", type=int, help="pop_size")
+    parser.add_argument("--model_name", default="none", type=str, help="model_name")
     opt = parser.parse_args()
     ct = ConstTruth(
         csf_folder_path="data/CSF/",
