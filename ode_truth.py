@@ -292,9 +292,12 @@ class ADSolver:
         # mt.time_end()
         return dy
 
-    def draw(self, save_flag=True, time_string="test", given_loss=None):
+    def draw(self, opt, save_flag=True, time_string="test", given_loss=None):
 
-        folder_path = "figure/{}/".format(time_string)
+        # folder_path = "figure/{}/".format(time_string)
+        folder_path = "figure/{0}{1}/".format(
+            "{}_".format(opt.model_name) if opt.model_name != "none" else "",
+            time_string)
         if not os.path.exists(folder_path):
             os.makedirs(folder_path)
         save_path_target = os.path.join(folder_path, "figure_target_{}.png".format(time_string))
@@ -483,7 +486,7 @@ def run(params=None, starts=None, time_string=None):
     loss, csf_rate_loss = loss_func(params, starts, ct)
     print("loss: {}".format(sum(loss) + csf_rate_loss))
     print("loss parts: {} csf match loss: {}".format(list(loss), csf_rate_loss))
-    truth.draw(time_string=time_string, given_loss=loss)
+    truth.draw(opt, time_string=time_string, given_loss=loss)
 
 
 if __name__ == "__main__":
