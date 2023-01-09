@@ -471,8 +471,8 @@ def run(params=None, starts=None, time_string=None):
     parser = argparse.ArgumentParser()
     parser.add_argument("--dataset", type=str, help="dataset strategy")
     parser.add_argument("--start", type=str, help="start strategy")
-    parser.add_argument("--generation", type=int, help="generation")
-    parser.add_argument("--pop_size", type=int, help="pop_size")
+    parser.add_argument("--generation", default=1000, type=int, help="generation")
+    parser.add_argument("--pop_size", default=100, type=int, help="pop_size")
     parser.add_argument("--model_name", default="none", type=str, help="model_name")
     opt = parser.parse_args()
     ct = ConstTruth(
@@ -490,32 +490,15 @@ def run(params=None, starts=None, time_string=None):
 
 
 if __name__ == "__main__":
-    # run()
-    ct = ConstTruth(
-        csf_folder_path="data/CSF/",
-        pet_folder_path="data/PET/",
-        dataset="all"
-    )
-    # record1 = loss_func(np.asarray([PARAMS[i]["init"] for i in range(PARAM_NUM)]), ct)
-    # print(record1)
-    # print("hhhh")
-#    params = np.load("saves/params_20221205_221101.npy")
-#    params = np.load("saves/params_20221129_201557.npy")
-    params = np.asarray([PARAMS[i]["init"] for i in range(PARAM_NUM)])
-#    params = np.load("saves/params_20221202_095940.npy")
-     
-    # print(len(params))
-    # np.save("saves/params_default_46.npy", params)
-    
-    # p0 = np.asarray([PARAMS[i]["init"] for i in range(PARAM_NUM)])
-    # record1 = loss_func(p0, ct)
-    # print(record1)
-    # run(p0)
+    # ct = ConstTruth(
+    #     csf_folder_path="data/CSF/",
+    #     pet_folder_path="data/PET/",
+    #     dataset="all"
+    # )
+
+    full_params = np.load("saves/params_20230105_031544_255565.npy")
+    params = full_params[:PARAM_NUM]
+    starts = full_params[-STARTS_NUM:]
+    run(params, starts)
 
 
-    # p = np.load("saves/params_20221103_090002.npy")
-    # record2 = loss_func(p, ct)
-    # print(record2)
-    # mt = MyTime()
-    run(params)
-    # mt.print()
