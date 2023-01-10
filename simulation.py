@@ -212,7 +212,8 @@ def simulate(pop_size=50, generation=100, method="GA"):
         f.write("old_loss: {}\n".format(old_loss))
         f.write("new_loss: {}\n".format(new_loss))
     with open("simulation_record.txt", "a") as f:
-        f.write("{0}, {1}, {2:.4f}, {3}, {4}, {5}, {6}, {7}, {8:.12f}, {9:.12f}\n".format(
+        f.write("{0}, {1}, {2}, {3:.4f}, {4}, {5}, {6}, {7}, {8}, {9:.12f}, {10:.12f}, {11}\n".format(
+            opt.model_name,
             time_string_start,
             time_string_end,
             (t1 - t0) / 60.0,
@@ -223,6 +224,7 @@ def simulate(pop_size=50, generation=100, method="GA"):
             pop_size,
             old_loss,
             new_loss,
+            opt.option,
         ))
     run(best_x[:PARAM_NUM], best_x[-STARTS_NUM:], time_string_start)
     # original_loss = np.sum(loss) + csf_rate_loss
