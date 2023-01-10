@@ -46,6 +46,7 @@ class ConstTruth:
         assert "csf_folder_path" in params and "pet_folder_path" in params, "please provide the save folder paths"
         assert "dataset" in params
         assert "start" in params
+        assert "option" in params
         self.params = params
         csf_folder_path, pet_folder_path = params["csf_folder_path"], params["pet_folder_path"]
         label_list = LABEL_LIST  # [[0, 2, 3, 4]]  # skip the second nodes (SMC)
@@ -191,7 +192,7 @@ class ADSolver:
         # k_p1Am, k_p2Am, k_dAm, k_diA, k_cA, k_sA, k_dAo, k_yA, k_pTm, k_dTm, k_ph1, k_ph2, k_deph, k_diT, k_cT, k_sT, k_dTp, k_sTp, k_dTo, k_yT, k_yTp, k_AN, k_TN, k_a1A, k_a2A, k_a1T, k_a2T, K_mTA, K_mAT, K_mAN, K_mTN, K_mT2, K_mA2 \
         #     = iter(self.params)
 
-        k_p1Am, k_p2Am, k_dAm, k_diA, k_cA, k_sA, k_dAo, k_yA, k_pTm, k_dTm, k_ph1, k_ph2, k_deph, k_diT, k_cT, k_sT, k_dTp, k_sTp, k_dTo, k_yT, k_yTp, k_AN, k_TN, k_a1A, k_a2A, k_a1T, k_a2T, K_mTA, K_mAT, K_mAN, K_mTN, K_mT2, K_mA2, n_TA, n_cA, n_AT, n_cT, n_cTp, n_cTo, n_AN, n_TN, n_a1A, n_a2A, n_a1T, n_a2T, n_a1Tp \
+        k_p1Am, k_p2Am, k_dAm, k_diA, k_cA, k_sA, k_dAo, k_yA, k_pTm, k_dTm, k_ph1, k_ph2, k_deph, k_diT, k_cT, k_sT, k_dTp, k_sTp, k_dTo, k_yT, k_yTp, k_AN, k_TN, k_a1A, k_a2A, k_a1T, k_a2T, K_mTA, K_mAT, K_mAN, K_mTN, K_mT2, K_mA2, n_TA, n_cA, n_AT, n_cT, n_cTp, n_cTo, n_AN, n_TN, n_a1A, n_a2A, n_a1T, n_a2T, n_a1Tp, n_a2Tp \
             = iter(self.params)
 #        k_p1Am, k_p2Am, k_dAm, k_diA, k_cA, k_sA, k_dAo, k_yA, k_pTm, k_dTm, k_ph1, k_ph2, k_deph, k_diT, k_cT, k_sT, k_dTp, k_sTp, k_dTo, k_yT, k_yTp, k_AN, k_TN, k_a1A, k_a2A, k_a1T, k_a2T, K_mTA, K_mAT, K_mAN, K_mTN, K_mT2, K_mA2, n_TA, n_cA, n_AT, n_cT, n_cTp, n_cTo, n_AN, n_TN, n_a1A, n_a2A, n_a1T, n_a2T, n_a1Tp, K_cA \
 #            = iter(self.params)
@@ -261,21 +262,34 @@ class ADSolver:
         ACSF_ = k_sA * sum_func(Am) - k_yA * ACSF
 #        ACSF_ = k_sA * sum_func(Am**2) - k_yA * ACSF   #NO###Am needs to be changed simultaneously
 #        ACSF_ = k_sA * sum_func(1.0 / (1.0 +  numpy_safe_pow(K_ACSF, n_ACSF) / numpy_safe_pow(Am, n_ACSF))) - k_yA * ACSF
+        assert self.const_truth.params["option"] in ["option1", "option2"]
+        if self.const_truth.params["option"] == "option1":
+            Tm_ = k_pTm - k_dTm * Tm - (
+                        k_ph1 + k_ph2 * 1.0 / (numpy_safe_pow(K_mAT, n_AT) / numpy_safe_pow(Ao, n_AT) + 1.0)) * Tm + k_deph * Tp - n_a1T * k_a1T * numpy_safe_pow(
+                              Tm, n_a1T) * numpy_safe_pow(Tp, n_a1Tp) - n_a2T * k_a2T * Tf * 1.0 / (
+                              1.0 + numpy_safe_pow(K_mT2, n_a2T) / numpy_safe_pow((Tm + Tp), n_a2T)) + (n_a1T + n_a2T) * k_diT * To - n_cT * k_cT * numpy_safe_pow(
+                              Tm, n_cT) * (numpy_safe_pow(Tp,n_cTp)) * To - k_sT * Tm + d_Tm * matmul_func(self.L, Tm)
+            Tp_ = -k_dTp * Tp + (
+                        k_ph1 + k_ph2 * 1.0 / (numpy_safe_pow(K_mAT, n_AT) / numpy_safe_pow(Ao, n_AT) + 1.0)) * Tm - k_deph * Tp - n_a1Tp * k_a1T * (
+                              numpy_safe_pow(Tm, n_a1T)) * numpy_safe_pow(Tp, n_a1Tp) - n_a2T * k_a2T * Tf * 1.0 / (
+                              1.0 + numpy_safe_pow(K_mT2, n_a2T) / numpy_safe_pow((Tm + Tp), n_a2T)) + (n_a1Tp + n_a2T) * k_diT * To - n_cTp * k_cT * numpy_safe_pow(
+                              Tm, n_cT) * numpy_safe_pow(Tp, n_cTp) * To - k_sTp * Tp + d_Tp * matmul_func(self.L, Tp)
 
-        Tm_ = k_pTm - k_dTm * Tm - (
-                    k_ph1 + k_ph2 * 1.0 / (numpy_safe_pow(K_mAT, n_AT) / numpy_safe_pow(Ao, n_AT) + 1.0)) * Tm + k_deph * Tp - n_a1T * k_a1T * numpy_safe_pow(
-                          Tm, n_a1T) * numpy_safe_pow(Tp, n_a1Tp) - n_a2T * k_a2T * Tf * 1.0 / (
-                          1.0 + numpy_safe_pow(K_mT2, n_a2T) / numpy_safe_pow((Tm + Tp), n_a2T)) + (n_a1T + n_a2T) * k_diT * To - n_cT * k_cT * numpy_safe_pow(
-                          Tm, n_cT) * (numpy_safe_pow(Tp,n_cTp)) * To - k_sT * Tm + d_Tm * matmul_func(self.L, Tm)
-        Tp_ = -k_dTp * Tp + (
-                    k_ph1 + k_ph2 * 1.0 / (numpy_safe_pow(K_mAT, n_AT) / numpy_safe_pow(Ao, n_AT) + 1.0)) * Tm - k_deph * Tp - n_a1Tp * k_a1T * (
-                          numpy_safe_pow(Tm, n_a1T)) * numpy_safe_pow(Tp, n_a1Tp) - n_a2T * k_a2T * Tf * 1.0 / (
-                          1.0 + numpy_safe_pow(K_mT2, n_a2T) / numpy_safe_pow((Tm + Tp), n_a2T)) + (n_a1Tp + n_a2T) * k_diT * To - n_cTp * k_cT * numpy_safe_pow(
-                          Tm, n_cT) * numpy_safe_pow(Tp, n_cTp) * To - k_sTp * Tp + d_Tp * matmul_func(self.L, Tp)
+            To_ = - k_dTo * To + k_a1T * numpy_safe_pow(Tm, n_a1T) * numpy_safe_pow(Tp, n_a1Tp) + k_a2T * Tf * 1.0 / (
+                        1.0 + numpy_safe_pow(K_mT2, n_a2T) / numpy_safe_pow((Tm + Tp), n_a2T)) - k_diT * To - k_cT * numpy_safe_pow(Tm, n_cT) * (
+                              numpy_safe_pow(Tp, n_cTp)) * To + d_To * matmul_func(self.L, To)
+        else:  # option2
+            Tm_ = k_pTm - k_dTm * Tm - (k_ph1 + k_ph2 * 1.0 / (numpy_safe_pow(K_mAT, n_AT) / numpy_safe_pow(Ao, n_AT) + 1.0)) * Tm + k_deph * Tp - n_a1T * k_a1T * numpy_safe_pow(
+                Tm, n_a1T) * numpy_safe_pow(Tp, n_a1Tp) - n_a2T * k_a2T * Tf * numpy_safe_pow(Tm, n_a2T) * numpy_safe_pow(Tp, n_a2Tp) + (n_a1T + n_a2T) * k_diT * To - n_cT * k_cT * numpy_safe_pow(
+                Tm, n_cT) * (numpy_safe_pow(Tp,n_cTp)) * To - k_sT * Tm + d_Tm * matmul_func(self.L, Tm)
 
-        To_ = - k_dTo * To + k_a1T * numpy_safe_pow(Tm, n_a1T) * numpy_safe_pow(Tp, n_a1Tp) + k_a2T * Tf * 1.0 / (
-                    1.0 + numpy_safe_pow(K_mT2, n_a2T) / numpy_safe_pow((Tm + Tp), n_a2T)) - k_diT * To - k_cT * numpy_safe_pow(Tm, n_cT) * (
-                          numpy_safe_pow(Tp, n_cTp)) * To + d_To * matmul_func(self.L, To)
+            Tp_ = -k_dTp * Tp + (k_ph1 + k_ph2 * 1.0 / (numpy_safe_pow(K_mAT, n_AT) / numpy_safe_pow(Ao, n_AT) + 1.0)) * Tm - k_deph * Tp - n_a1Tp * k_a1T * (
+                numpy_safe_pow(Tm, n_a1T)) * numpy_safe_pow(Tp, n_a1Tp) - n_a2Tp * k_a2T * Tf * numpy_safe_pow(Tm, n_a2T) * numpy_safe_pow(Tp, n_a2Tp) + (n_a1Tp + n_a2Tp) * k_diT * To - n_cTp * k_cT * numpy_safe_pow(
+                Tm, n_cT) * numpy_safe_pow(Tp, n_cTp) * To - k_sTp * Tp + d_Tp * matmul_func(self.L, Tp)
+
+            To_ = - k_dTo * To + k_a1T * numpy_safe_pow(Tm, n_a1T) * numpy_safe_pow(Tp, n_a1Tp) + k_a2T * Tf * 1.0 / (
+                1.0 + numpy_safe_pow(K_mT2, n_a2T) / numpy_safe_pow((Tm + Tp), n_a2T)) - k_diT * To - k_cT * numpy_safe_pow(Tm, n_cT) * (
+                numpy_safe_pow(Tp, n_cTp)) * To + d_To * matmul_func(self.L, To)
 
         Tf_ = k_cT * numpy_safe_pow(Tm, n_cT) * numpy_safe_pow(Tp, n_cTp) * numpy_safe_pow(To, n_cTo)
 
@@ -398,7 +412,7 @@ def f_csf_rate(x, thr=1.7052845384621318, tol=0.2, p=1.0):
 
 def loss_func(params, starts_weight, ct):
     # print("calling loss_func..")
-    truth = ADSolver("CN")
+    truth = ADSolver("CN", ct)
     truth.step(params, starts_weight)
     targets = ["APET", "TPET", "NPET", "ACSF", "TpCSF", "TCSF", "TtCSF"]
     record = np.zeros(len(targets))
@@ -434,7 +448,9 @@ def loss_func(params, starts_weight, ct):
         # record[i] = np.mean(((predict_points - target_points) / target_points) ** 2)
         record[i] = np.mean((predict_points_scaled - target_points_scaled) ** 2)
     # record = record[[0, 1, 3, 4, 5, 6]]
-    csf_rate = f_csf_rate(np.max(truth.output[3][0]) / np.max(truth.output[6][0]))
+    csf_rate = \
+        f_csf_rate(np.max(truth.output[3][0]) / np.max(truth.output[6][0]), thr=1.7052845384621318, tol=0.2, p=1.0) + \
+        f_csf_rate(np.max(truth.output[4][0]) / np.max(truth.output[5][0]), thr=0.7142857142857143, tol=0.2, p=1.0)
     return record, csf_rate  # remove NPET here
 
 
@@ -469,17 +485,19 @@ def run(params=None, starts=None, time_string=None):
 
     class_name = "CN"
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dataset", type=str, help="dataset strategy")
-    parser.add_argument("--start", type=str, help="start strategy")
+    parser.add_argument("--dataset", type=str, choices=["all", "chosen_0"], help="dataset strategy")
+    parser.add_argument("--start", type=str, choices=["fixed", "ranged"], help="start strategy")
     parser.add_argument("--generation", default=1000, type=int, help="generation")
     parser.add_argument("--pop_size", default=100, type=int, help="pop_size")
     parser.add_argument("--model_name", default="none", type=str, help="model_name")
+    parser.add_argument("--option", type=str, choices=["option1", "option2"], help="option")
     opt = parser.parse_args()
     ct = ConstTruth(
         csf_folder_path="data/CSF/",
         pet_folder_path="data/PET/",
         dataset=opt.dataset,
         start=opt.start,
+        option=opt.option,
     )
     truth = ADSolver(class_name, ct)
     truth.step(params, starts)

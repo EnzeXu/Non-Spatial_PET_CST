@@ -62,6 +62,7 @@ def simulate(pop_size=50, generation=100, method="GA"):
     parser.add_argument("--generation", type=int, help="generation")
     parser.add_argument("--pop_size", type=int, help="pop_size")
     parser.add_argument("--model_name", default="none", type=str, help="model_name")
+    parser.add_argument("--option", type=str, choices=["option1", "option2"], help="option")
     opt = parser.parse_args()
     if opt.generation:
         generation = opt.generation
@@ -76,6 +77,7 @@ def simulate(pop_size=50, generation=100, method="GA"):
         pet_folder_path="data/PET/",
         dataset=opt.dataset,
         start=opt.start,
+        option=opt.option,
     )
     problem = MyProblem(ct)
 

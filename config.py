@@ -14,7 +14,7 @@ class Start:
         assert class_name in ["CN", "SMC", "EMCI", "LMCI", "AD"], "param class_name must in ['CN', 'SMC', 'EMCI', 'LMCI', 'AD'], but got \"{}\"!".format(class_name)
         self.class_name = class_name
         csf_data = np.load(os.path.join(csf_data_path, "CSF_{}.npy".format(self.class_name)))
-        Am = np.random.uniform(1e-2, 5e-2, size=Config.N_dim)
+        Am = np.random.uniform(1e-2, 3e-2, size=Config.N_dim)
         Am_avg = np.mean(Am).reshape(1)
         Ao = np.random.uniform(0, 1e-2, size=Config.N_dim)
         Ao_avg = np.mean(Ao).reshape(1)
@@ -22,13 +22,13 @@ class Start:
         Af = Af * 1e-2
         Af_avg = np.mean(Af).reshape(1)
         ACSF = np.expand_dims(csf_data[0], axis=0)  # 0.14 * np.ones(1)
-        ACSF = ACSF * 1e-3
-        Tm = np.random.uniform(1e-2, 5e-2,
+        ACSF = ACSF * 1e-3 * 0.203 / 0.200  # enze: reduce acsf starting value
+        Tm = np.random.uniform(1e-2, 3e-2,
                                size=Config.N_dim)  ##1020 TAU concentration in neuronal cells is around 2uM - AD26
         Tm_avg = np.mean(Tm).reshape(1)
-        Tp = np.random.uniform(0, 5e-2, size=Config.N_dim)
+        Tp = np.random.uniform(0, 3e-2, size=Config.N_dim)
         Tp_avg = np.mean(Tp).reshape(1)
-        To = np.random.uniform(0, 5e-2, size=Config.N_dim)
+        To = np.random.uniform(0, 3e-2, size=Config.N_dim)
         To_avg = np.mean(To).reshape(1)
         Tf = np.load(os.path.join(pet_data_path, "PET-T_{}.npy".format(self.class_name)))
         Tf = Tf * 2 * 1e-3

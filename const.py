@@ -7,7 +7,7 @@ LABEL_ID = {
     "LMCI": 3,
     "AD": 4
 }
-PARAM_NUM = 51 - 5
+PARAM_NUM = 51 - 5 + 1  # n_a2Tp
 #PARAM_NUM = 51 - 4
 UPFOLD = 10
 LOWFOLD = 0.1
@@ -21,6 +21,7 @@ parser.add_argument("--start", type=str, help="start strategy")
 parser.add_argument("--generation", type=int, help="generation")
 parser.add_argument("--pop_size", type=int, help="pop_size")
 parser.add_argument("--model_name", default="none", type=str, help="model_name")
+parser.add_argument("--option", type=str, choices=["option1", "option2"], help="option")
 opt = parser.parse_args()
 
 assert opt.start in ["fixed", "ranged"]
@@ -591,50 +592,47 @@ PARAMS = [
         "ub": 12.0
     },
     {
-#        "id": 46,
-#        "name": "K_cA",#"d_Am",
-#        "init": 0.5,
-#        "lb": 0.05,
-#        "ub": 5,
         "id": 46,
-        "name": "d_Am",
-        "init": 1.0,
+        "name": "n_a2Tp",
+        "init": 2.0,
         "lb": 1.0,
-        "ub": 12.0,
+        "ub": 12.0
     },
-    {
-#        "id": 47,
-#        "name": "K_ACSF",#"d_Ao",
-#        "init": 0.5,#1.0,
-#        "lb": 0.5 * 0.5,#1.0,
-#        "ub": 0.5 * 2,#1.0,
-        "id": 47,
-        "name": "d_Ao",
-        "init": 1.0,
-        "lb": 1.0,
-        "ub": 1.0,
-    },
-    {
-        "id": 48,
-        "name": "d_Tm",
-        "init": 1.0,
-        "lb": 1.0,
-        "ub": 1.0,
-    },
-    {
-        "id": 49,
-        "name": "d_Tp",
-        "init": 1.0,
-        "lb": 1.0,
-        "ub": 1.0,
-    },
-    {
-        "id": 50,
-        "name": "d_To",
-        "init": 1.0,
-        "lb": 1.0,
-        "ub": 1.0,
-    }
+    # {
+    #     "id": 46,
+    #     "name": "d_Am",
+    #     "init": 1.0,
+    #     "lb": 1.0,
+    #     "ub": 12.0,
+    # },
+    # {
+    #     "id": 47,
+    #     "name": "d_Ao",
+    #     "init": 1.0,
+    #     "lb": 1.0,
+    #     "ub": 1.0,
+    # },
+    # {
+    #     "id": 48,
+    #     "name": "d_Tm",
+    #     "init": 1.0,
+    #     "lb": 1.0,
+    #     "ub": 1.0,
+    # },
+    # {
+    #     "id": 49,
+    #     "name": "d_Tp",
+    #     "init": 1.0,
+    #     "lb": 1.0,
+    #     "ub": 1.0,
+    # },
+    # {
+    #     "id": 50,
+    #     "name": "d_To",
+    #     "init": 1.0,
+    #     "lb": 1.0,
+    #     "ub": 1.0,
+    # }
 ]
 
 """
