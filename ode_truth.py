@@ -47,6 +47,7 @@ class ConstTruth:
         assert "dataset" in params
         assert "start" in params
         assert "option" in params
+        assert "tcsf_scaler" in params
         self.params = params
         csf_folder_path, pet_folder_path = params["csf_folder_path"], params["pet_folder_path"]
         label_list = LABEL_LIST  # [[0, 2, 3, 4]]  # skip the second nodes (SMC)
@@ -106,7 +107,7 @@ class ADSolver:
         self.t = np.linspace(0.0, self.T - self.T_unit, int(self.T / self.T_unit))  # expand time
         self.class_name = class_name
         self.const_truth = const_truth
-        self.y0 = Start(class_name).all
+        self.y0 = Start(class_name, tcsf_scaler=self.const_truth.params["tcsf_scaler"]).all
         # print("ODE size: {}".format(self.y0.shape))
 
         self.lines = ["APET", "TPET", "NPET", "ACSF", "TpCSF", "TCSF", "TtCSF"]
@@ -447,6 +448,10 @@ def loss_func(params, starts_weight, ct):
 
         # record[i] = np.mean(((predict_points - target_points) / target_points) ** 2)
         record[i] = np.mean((predict_points_scaled - target_points_scaled) ** 2)
+        if i == 3:
+            record[i] /= 10.0
+        elif i == 1:
+            record[i] *= 10.0
     # record = record[[0, 1, 3, 4, 5, 6]]
     csf_rate = \
         f_csf_rate(np.max(truth.output[3][0]) / np.max(truth.output[6][0]), thr=1.7052845384621318, tol=0.2, p=1.0) + \
@@ -478,26 +483,29 @@ class MyTime:
         print("count = {}; total time = {} s; avg time = {} s".format(self.count, self.sum, self.sum / self.count))
 
 
-def run(params=None, starts=None, time_string=None):
+def run(params=None, starts=None, time_string=None, opt=None):
     if not time_string:
         time_string = get_now_string()
     print("Time String (as folder name): {}".format(time_string))
 
     class_name = "CN"
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--dataset", type=str, choices=["all", "chosen_0"], help="dataset strategy")
-    parser.add_argument("--start", type=str, choices=["fixed", "ranged"], help="start strategy")
-    parser.add_argument("--generation", default=1000, type=int, help="generation")
-    parser.add_argument("--pop_size", default=100, type=int, help="pop_size")
-    parser.add_argument("--model_name", default="none", type=str, help="model_name")
-    parser.add_argument("--option", type=str, choices=["option1", "option2"], help="option")
-    opt = parser.parse_args()
+    if opt is None:
+        parser = argparse.ArgumentParser()
+        parser.add_argument("--dataset", type=str, choices=["all", "chosen_0"], help="dataset strategy")
+        parser.add_argument("--start", type=str, choices=["fixed", "ranged"], help="start strategy")
+        parser.add_argument("--generation", default=1000, type=int, help="generation")
+        parser.add_argument("--pop_size", default=100, type=int, help="pop_size")
+        parser.add_argument("--model_name", default="none", type=str, help="model_name")
+        parser.add_argument("--option", type=str, choices=["option1", "option2"], help="option")
+        parser.add_argument("--tcsf_scaler", type=float, help="tcsf_scaler")
+        opt = parser.parse_args()
     ct = ConstTruth(
         csf_folder_path="data/CSF/",
         pet_folder_path="data/PET/",
         dataset=opt.dataset,
         start=opt.start,
         option=opt.option,
+        tcsf_scaler=opt.tcsf_scaler,
     )
     truth = ADSolver(class_name, ct)
     truth.step(params, starts)

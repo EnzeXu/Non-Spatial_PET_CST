@@ -63,6 +63,7 @@ def simulate(pop_size=50, generation=100, method="GA"):
     parser.add_argument("--pop_size", type=int, help="pop_size")
     parser.add_argument("--model_name", default="none", type=str, help="model_name")
     parser.add_argument("--option", type=str, choices=["option1", "option2"], help="option")
+    parser.add_argument("--tcsf_scaler", type=float, help="tcsf_scaler")
     opt = parser.parse_args()
     if opt.generation:
         generation = opt.generation
@@ -78,6 +79,7 @@ def simulate(pop_size=50, generation=100, method="GA"):
         dataset=opt.dataset,
         start=opt.start,
         option=opt.option,
+        tcsf_scaler=opt.tcsf_scaler
     )
     problem = MyProblem(ct)
 
@@ -212,7 +214,7 @@ def simulate(pop_size=50, generation=100, method="GA"):
         f.write("old_loss: {}\n".format(old_loss))
         f.write("new_loss: {}\n".format(new_loss))
     with open("simulation_record.txt", "a") as f:
-        f.write("{0}, {1}, {2}, {3:.4f}, {4}, {5}, {6}, {7}, {8}, {9:.12f}, {10:.12f}, {11}\n".format(
+        f.write("{0}, {1}, {2}, {3:.4f}, {4}, {5}, {6}, {7}, {8}, {9:.12f}, {10:.12f}, {11}, {12:.2f}\n".format(
             opt.model_name,
             time_string_start,
             time_string_end,
@@ -225,8 +227,9 @@ def simulate(pop_size=50, generation=100, method="GA"):
             old_loss,
             new_loss,
             opt.option,
+            opt.tcsf_scaler,
         ))
-    run(best_x[:PARAM_NUM], best_x[-STARTS_NUM:], time_string_start)
+    run(best_x[:PARAM_NUM], best_x[-STARTS_NUM:], time_string_start, opt=opt)
     # original_loss = np.sum(loss) + csf_rate_loss
     # print("[run - multi_obj] Note that using the initial params loss = {}".format(original_loss))
 

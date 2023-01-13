@@ -1,7 +1,7 @@
 draft = """#!/bin/bash
 #SBATCH --job-name="{0}"
 #SBATCH --partition=medium
-#SBATCH --nodes=8
+#SBATCH --nodes=2
 #SBATCH --time=1-00:00:00
 #SBATCH --mem=20GB
 #SBATCH --mail-user=xue20@wfu.edu
@@ -52,38 +52,67 @@ def one_time_build_A():
         # ["A2", 1500, "all", "ranged", 100],
         # ["A2", 1750, "all", "ranged", 100],
         # ["A2", 2000, "all", "ranged", 100],
-        ["A3-1", 500, "chosen_0", "fixed", 100, "option1"],
-        ["A3-1", 1000, "chosen_0", "fixed", 100, "option1"],
-        ["A3-1", 1500, "chosen_0", "fixed", 100, "option1"],
-        ["A3-1", 2000, "chosen_0", "fixed", 100, "option1"],
-        ["A3-2", 500, "chosen_0", "fixed", 100, "option2"],
-        ["A3-2", 1000, "chosen_0", "fixed", 100, "option2"],
-        ["A3-2", 1500, "chosen_0", "fixed", 100, "option2"],
-        ["A3-2", 2000, "chosen_0", "fixed", 100, "option2"],
-        ["A4-1", 500, "chosen_0", "ranged", 100, "option1"],
-        ["A4-1", 600, "chosen_0", "ranged", 100, "option1"],
-        ["A4-1", 700, "chosen_0", "ranged", 100, "option1"],
-        ["A4-1", 800, "chosen_0", "ranged", 100, "option1"],
-        ["A4-1", 900, "chosen_0", "ranged", 100, "option1"],
-        ["A4-1", 1000, "chosen_0", "ranged", 100, "option1"],
-        ["A4-1", 1500, "chosen_0", "ranged", 100, "option1"],
-        ["A4-1", 2000, "chosen_0", "ranged", 100, "option1"],
-        ["A4-2", 500, "chosen_0", "ranged", 100, "option2"],
-        ["A4-2", 1000, "chosen_0", "ranged", 100, "option2"],
-        ["A4-2", 1500, "chosen_0", "ranged", 100, "option2"],
-        ["A4-2", 2000, "chosen_0", "ranged", 100, "option2"],
+        # ["A3-1", 500, "chosen_0", "fixed", 100, "option1"],
+        # ["A3-1", 1000, "chosen_0", "fixed", 100, "option1"],
+        # ["A3-1", 1500, "chosen_0", "fixed", 100, "option1"],
+        # ["A3-1", 2000, "chosen_0", "fixed", 100, "option1"],
+        # ["A3-2", 500, "chosen_0", "fixed", 100, "option2"],
+        # ["A3-2", 1000, "chosen_0", "fixed", 100, "option2"],
+        # ["A3-2", 1500, "chosen_0", "fixed", 100, "option2"],
+        # ["A3-2", 2000, "chosen_0", "fixed", 100, "option2"],
+        ["A4-1", 500, "chosen_0", "ranged", 100, "option1", 0.3],
+        ["A4-1", 600, "chosen_0", "ranged", 100, "option1", 0.3],
+        ["A4-1", 700, "chosen_0", "ranged", 100, "option1", 0.3],
+        ["A4-1", 800, "chosen_0", "ranged", 100, "option1", 0.3],
+        ["A4-1", 900, "chosen_0", "ranged", 100, "option1", 0.3],
+        ["A4-1", 1000, "chosen_0", "ranged", 100, "option1", 0.3],
+
+        ["A4-1", 500, "chosen_0", "ranged", 100, "option1", 0.4],
+        ["A4-1", 600, "chosen_0", "ranged", 100, "option1", 0.4],
+        ["A4-1", 700, "chosen_0", "ranged", 100, "option1", 0.4],
+        ["A4-1", 800, "chosen_0", "ranged", 100, "option1", 0.4],
+        ["A4-1", 900, "chosen_0", "ranged", 100, "option1", 0.4],
+        ["A4-1", 1000, "chosen_0", "ranged", 100, "option1", 0.4],
+
+        ["A4-1", 500, "chosen_0", "ranged", 100, "option1", 0.5],
+        ["A4-1", 600, "chosen_0", "ranged", 100, "option1", 0.5],
+        ["A4-1", 700, "chosen_0", "ranged", 100, "option1", 0.5],
+        ["A4-1", 800, "chosen_0", "ranged", 100, "option1", 0.5],
+        ["A4-1", 900, "chosen_0", "ranged", 100, "option1", 0.5],
+        ["A4-1", 1000, "chosen_0", "ranged", 100, "option1", 0.5],
+
+        ["A4-1", 500, "chosen_0", "ranged", 100, "option1", 0.6],
+        ["A4-1", 600, "chosen_0", "ranged", 100, "option1", 0.6],
+        ["A4-1", 700, "chosen_0", "ranged", 100, "option1", 0.6],
+        ["A4-1", 800, "chosen_0", "ranged", 100, "option1", 0.6],
+        ["A4-1", 900, "chosen_0", "ranged", 100, "option1", 0.6],
+        ["A4-1", 1000, "chosen_0", "ranged", 100, "option1", 0.6],
+
+        ["A4-1", 500, "chosen_0", "ranged", 100, "option1", 0.7],
+        ["A4-1", 600, "chosen_0", "ranged", 100, "option1", 0.7],
+        ["A4-1", 700, "chosen_0", "ranged", 100, "option1", 0.7],
+        ["A4-1", 800, "chosen_0", "ranged", 100, "option1", 0.7],
+        ["A4-1", 900, "chosen_0", "ranged", 100, "option1", 0.7],
+        ["A4-1", 1000, "chosen_0", "ranged", 100, "option1", 0.7],
+        # ["A4-1", 1500, "chosen_0", "ranged", 100, "option1"],
+        # ["A4-1", 2000, "chosen_0", "ranged", 100, "option1"],
+        # ["A4-2", 500, "chosen_0", "ranged", 100, "option2"],
+        # ["A4-2", 1000, "chosen_0", "ranged", 100, "option2"],
+        # ["A4-2", 1500, "chosen_0", "ranged", 100, "option2"],
+        # ["A4-2", 2000, "chosen_0", "ranged", 100, "option2"],
     ]
     dic = dict()
     for one_plan in plans:
-        dic["model_name"] = one_plan[0]
+        dic["model_name"] = "{0}_{1:.1f}".format(one_plan[0], one_plan[6])
         dic["generation"] = one_plan[1]
         dic["dataset"] = one_plan[2]
         dic["start"] = one_plan[3]
         dic["pop_size"] = one_plan[4]
         dic["option"] = one_plan[5]
+        dic["tcsf_scaler"] = one_plan[6]
 
         one_slurm(
-            "GA_{}_{}".format(one_plan[0], one_plan[1]),
+            "GA_{}_{}".format(dic["model_name"], one_plan[1]),
             "test_nsga.py",
             dic)
 

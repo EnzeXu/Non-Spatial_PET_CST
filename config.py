@@ -10,7 +10,7 @@ class Config:
 
 
 class Start:
-    def __init__(self, class_name=None, pet_data_path="data/PET/", csf_data_path="data/CSF/"):
+    def __init__(self, class_name=None, tcsf_scaler=1.0, pet_data_path="data/PET/", csf_data_path="data/CSF/"):
         assert class_name in ["CN", "SMC", "EMCI", "LMCI", "AD"], "param class_name must in ['CN', 'SMC', 'EMCI', 'LMCI', 'AD'], but got \"{}\"!".format(class_name)
         self.class_name = class_name
         csf_data = np.load(os.path.join(csf_data_path, "CSF_{}.npy".format(self.class_name)))
@@ -34,9 +34,9 @@ class Start:
         Tf = Tf * 2 * 1e-3
         Tf_avg = np.mean(Tf).reshape(1)
         TCSF = np.expand_dims(csf_data[1] - csf_data[2], axis=0)  # 0.19 * np.ones(1)
-        TCSF = TCSF * 5e-4 * 0.1  # enze: * 0.1
+        TCSF = TCSF * 5e-4 * tcsf_scaler  # enze: * 0.1
         TpCSF = np.expand_dims(csf_data[2], axis=0)  # 0.20 * np.ones(1)
-        TpCSF = TpCSF * 5e-4 * 0.1  # enze: * 0.1
+        TpCSF = TpCSF * 5e-4 * tcsf_scaler  # enze: * 0.1
         N = np.load(os.path.join(pet_data_path, "PET-N_{}.npy".format(self.class_name)))
         N_avg = np.mean(N).reshape(1)
 

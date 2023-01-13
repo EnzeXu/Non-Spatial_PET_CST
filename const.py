@@ -22,6 +22,7 @@ parser.add_argument("--generation", type=int, help="generation")
 parser.add_argument("--pop_size", type=int, help="pop_size")
 parser.add_argument("--model_name", default="none", type=str, help="model_name")
 parser.add_argument("--option", type=str, choices=["option1", "option2"], help="option")
+parser.add_argument("--tcsf_scaler", type=float, help="tcsf_scaler")
 opt = parser.parse_args()
 
 assert opt.start in ["fixed", "ranged"]
