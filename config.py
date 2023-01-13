@@ -34,9 +34,9 @@ class Start:
         Tf = Tf * 2 * 1e-3
         Tf_avg = np.mean(Tf).reshape(1)
         TCSF = np.expand_dims(csf_data[1] - csf_data[2], axis=0)  # 0.19 * np.ones(1)
-        TCSF = TCSF * 5e-4 * 0.7  # enze: * 0.1
+        TCSF = TCSF * 5e-4 * 0.1  # enze: * 0.1
         TpCSF = np.expand_dims(csf_data[2], axis=0)  # 0.20 * np.ones(1)
-        TpCSF = TpCSF * 5e-4 * 0.7  # enze: * 0.1
+        TpCSF = TpCSF * 5e-4 * 0.1  # enze: * 0.1
         N = np.load(os.path.join(pet_data_path, "PET-N_{}.npy".format(self.class_name)))
         N_avg = np.mean(N).reshape(1)
 
