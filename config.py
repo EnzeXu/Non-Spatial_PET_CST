@@ -1,7 +1,7 @@
 import numpy as np
 import os
 
-from const import LABEL_ID
+# from const import LABEL_ID
 
 
 class Config:
@@ -22,7 +22,7 @@ class Start:
         Af = Af * 1e-2
         Af_avg = np.mean(Af).reshape(1)
         ACSF = np.expand_dims(csf_data[0], axis=0)  # 0.14 * np.ones(1)
-        ACSF = ACSF * 1e-3 * 0.203 / 0.200  # enze: reduce acsf starting value
+        ACSF = ACSF * 1e-3 * 0.203 / 0.200 * 0.8  # enze: reduce acsf starting value
         Tm = np.random.uniform(1e-2, 3e-2,
                                size=Config.N_dim)  ##1020 TAU concentration in neuronal cells is around 2uM - AD26
         Tm_avg = np.mean(Tm).reshape(1)
