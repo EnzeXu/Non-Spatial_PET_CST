@@ -2,7 +2,7 @@
 
 for i in $(seq 0.1 0.1 0.6)
 do
-    for j in 500 600 700 800 900 1000
+    for j in 300 400 500 600 700 800
     do
         sbatch jobs/GA_A4-1_${i}_${j}.slurm
     done
