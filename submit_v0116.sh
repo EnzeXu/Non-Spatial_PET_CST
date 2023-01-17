@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for i in $(seq 0.1 0.1 0.6)
+for i in $(seq 0.7 0.1 1.0)
 do
     for j in 500 600 700 800
     do

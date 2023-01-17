@@ -22,7 +22,7 @@ class Start:
         Af = Af * 1e-2
         Af_avg = np.mean(Af).reshape(1)
         ACSF = np.expand_dims(csf_data[0], axis=0)  # 0.14 * np.ones(1)
-        ACSF = ACSF * 1e-3 * 0.203 / 0.200 # enze: reduce acsf starting value
+        ACSF = ACSF * 1e-3 * 0.203 / 0.200 * 0.8 # enze: reduce acsf starting value
         Tm = np.random.uniform(1e-2, 3e-2,
                                size=Config.N_dim)  ##1020 TAU concentration in neuronal cells is around 2uM - AD26
         Tm_avg = np.mean(Tm).reshape(1)
@@ -34,9 +34,9 @@ class Start:
         Tf = Tf * 2 * 1e-3
         Tf_avg = np.mean(Tf).reshape(1)
         TCSF = np.expand_dims(csf_data[1] - csf_data[2], axis=0)  # 0.19 * np.ones(1)
-        TCSF = TCSF * 5e-4 * tcsf_scaler * 1.125  # enze: * 0.1
+        TCSF = TCSF * 5e-4 * tcsf_scaler  # enze: * 0.1
         TpCSF = np.expand_dims(csf_data[2], axis=0)  # 0.20 * np.ones(1)
-        TpCSF = TpCSF * 5e-4 * tcsf_scaler * 1.125 # enze: * 0.1
+        TpCSF = TpCSF * 5e-4 * tcsf_scaler  # enze: * 0.1
         N = np.load(os.path.join(pet_data_path, "PET-N_{}.npy".format(self.class_name)))
         N_avg = np.mean(N).reshape(1)
 
