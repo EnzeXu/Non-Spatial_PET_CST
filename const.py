@@ -7,7 +7,7 @@ LABEL_ID = {
     "LMCI": 3,
     "AD": 4
 }
-PARAM_NUM = 51 - 5 + 1  # n_a2Tp
+PARAM_NUM = 51 - 5 + 1 + 2  # n_a2Tp + ktcsf & tacsf
 #PARAM_NUM = 51 - 4
 UPFOLD = 10
 LOWFOLD = 0.1
@@ -601,6 +601,20 @@ if opt.option == "option1":
             "init": 2.0,
             "lb": 1.0,
             "ub": 12.0
+        },
+        {
+            "id": 47,
+            "name": "k_acsf",
+            "init": 2e-2,
+            "lb": 2e-2 * LOWFOLD,
+            "ub": 2e-2 * UPFOLD
+        },
+        {
+            "id": 48,
+            "name": "k_tcsf",
+            "init": 2e-2,
+            "lb": 2e-2 * LOWFOLD,
+            "ub": 2e-2 * UPFOLD
         },
         # {
         #     "id": 46,
