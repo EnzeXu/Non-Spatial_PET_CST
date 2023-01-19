@@ -260,7 +260,7 @@ class ADSolver:
 #        Af_ = k_cA * Ao * 1.0 / (numpy_safe_pow(K_cA, n_cA) / numpy_safe_pow(Am, n_cA) + 1.0)
 #        IACSF_ = k_sA * sum_func(Am) - k_I2CSF * IACSF
 #        ACSF_ = k_I2CSF * IACSF- k_yA * ACSF
-        ACSF_ = k_sA * sum_func(np.log(Am)) - k_yA * ACSF  # v0118 sqrt ! square !
+        ACSF_ = k_sA * sum_func((Am ** 2) / (Am ** 2 + k_acsf ** 2)) - k_yA * ACSF  # v0118 sqrt ! square ! log ! hill !
 #        ACSF_ = k_sA * sum_func(Am**2) - k_yA * ACSF   #NO###Am needs to be changed simultaneously
 #        ACSF_ = k_sA * sum_func(1.0 / (1.0 +  numpy_safe_pow(K_ACSF, n_ACSF) / numpy_safe_pow(Am, n_ACSF))) - k_yA * ACSF
         assert self.const_truth.params["option"] in ["option1", "option2"]
@@ -294,9 +294,9 @@ class ADSolver:
 
         Tf_ = k_cT * numpy_safe_pow(Tm, n_cT) * numpy_safe_pow(Tp, n_cTp) * numpy_safe_pow(To, n_cTo)
 
-        TCSF_ = k_sT * sum_func(np.log(Tm)) - k_yT * TCSF  # v0118 sqrt !
+        TCSF_ = k_sT * sum_func((Tm ** 2) / (Tm ** 2 + k_tcsf ** 2)) - k_yT * TCSF  # v0118 sqrt !
 #        TCSF_ = k_sT * sum_func(Tm**2) - k_yT * TCSF
-        TpCSF_ = k_sTp * sum_func(np.log(Tp)) - k_yTp * TpCSF  # v0118 sqrt !
+        TpCSF_ = k_sTp * sum_func((Tp ** 2) / (Tp ** 2 + k_tcsf ** 2)) - k_yTp * TpCSF  # v0118 sqrt !
 
         N_ = k_AN * 1.0 / (numpy_safe_pow(K_mAN, n_AN) / numpy_safe_pow((Ao + Af), n_AN) + 1.0) + k_TN * 1.0 / (
                     numpy_safe_pow(K_mTN, n_TN) / numpy_safe_pow((To + Tf), n_TN) + 1.0)
