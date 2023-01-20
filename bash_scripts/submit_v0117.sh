@@ -8,7 +8,7 @@ do
     done
 done
 #sbatch jobs/GA_A4-1_0.3_500.slurm
-#sbatch jobs/GA_A4-1_0.3_600.slurmsubmit_v0113.sh
+#sbatch jobs/GA_A4-1_0.3_600.slurm
 #sbatch jobs/GA_A4-1_0.3_700.slurm
 #sbatch jobs/GA_A4-1_0.3_800.slurm
 #sbatch jobs/GA_A4-1_0.3_900.slurm

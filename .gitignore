@@ -7,5 +7,6 @@ slides/*
 figure_slides/*
 logs/*
 venv/*
-test.py
+test*
+!test_nsga.py
 simulation_record*.txt
