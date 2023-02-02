@@ -21,9 +21,11 @@ def one_time_deal_PET(data_path_list=None):
 
     class_number = 5
 
-    for type_name, df in zip(["PET-A", "PET-T", "PET-N"], [data_a, data_t, data_n]):
+    pet_patient_wise_dict = dict()
+    for ii, type_name, df in zip(range(3), ["PET-A", "PET-T", "PET-N"], [data_a, data_t, data_n]):
         save_path = "data/PET/{}_{{}}.npy".format(type_name)
         collection = np.zeros((class_number, 160))
+        collection_patient_wise = [[] for i in range(class_number)]
         counts = np.zeros(class_number)
         for index, row in df.iterrows():
             label = None
@@ -38,6 +40,7 @@ def one_time_deal_PET(data_path_list=None):
                 continue
             for i in range(160):
                 collection[LABEL_ID[label]][i] += float(row[COLUMN_NAMES[i]])
+            collection_patient_wise[LABEL_ID[label]].append(sum([row[COLUMN_NAMES[i]] for i in range(160)]) / 160.0)
         for one_key in LABELS:
             if counts[LABEL_ID[one_key]] != 0:
                 avg = collection[LABEL_ID[one_key], :] / counts[LABEL_ID[one_key]]
@@ -45,6 +48,11 @@ def one_time_deal_PET(data_path_list=None):
                 np.save(save_path.format(one_key), avg)
                 print(one_key, np.mean(avg))
         print(type_name, "counts:", counts)
+        pet_patient_wise_dict[ii] = collection_patient_wise
+    with open("test/PET_dict.pkl", "wb") as f:
+        pickle.dump(pet_patient_wise_dict, f)
+        # for i in range(class_number):
+        #     print(len(collection_patient_wise[i]), collection_patient_wise[i])
 
 
 def one_time_deal_PET_specified(APOE, gender, data_path_list=None):
@@ -206,6 +214,10 @@ def one_time_deal_CSF(csf_path=None, dictionary_pickle_path=None):
     counts = np.zeros(len(class_list))
     collection = np.zeros([len(class_list), 3])
 
+    csf_patient_wise_dict = dict()
+    # collection_acsf = [[] for i in range(5)]
+    for one_key in ["ACSF", "TpCSF", "TCSF", "TtCSF"]:
+        csf_patient_wise_dict[one_key] = [[] for i in range(5)]
     for index, row in df.iterrows():
         ptid_key = str(int(row["RID"])).zfill(4)
         if ptid_key not in ptid_dic:
@@ -216,12 +228,23 @@ def one_time_deal_CSF(csf_path=None, dictionary_pickle_path=None):
             counts[LABEL_ID[label]] += 1
             for i in range(3):
                 collection[LABEL_ID[label]][i] += float(row[COLUMN_NAMES_CSF[i]])
+            csf_patient_wise_dict["ACSF"][LABEL_ID[label]].append(float(row[COLUMN_NAMES_CSF[0]]))
+            csf_patient_wise_dict["TpCSF"][LABEL_ID[label]].append(float(row[COLUMN_NAMES_CSF[2]]))
+            csf_patient_wise_dict["TCSF"][LABEL_ID[label]].append(float(row[COLUMN_NAMES_CSF[1]]) - float(row[COLUMN_NAMES_CSF[2]]))
+            csf_patient_wise_dict["TtCSF"][LABEL_ID[label]].append(float(row[COLUMN_NAMES_CSF[1]]))
     for one_key in LABELS:
         if counts[LABEL_ID[one_key]] != 0:
             avg = collection[LABEL_ID[one_key], :] / counts[LABEL_ID[one_key]]
             np.save("data/CSF/CSF_{}".format(one_key), avg)
             print("CSF_{} counts={} avg={}".format(one_key, counts[LABEL_ID[one_key]], avg))
     print("CSF counts:", counts)
+    # print(csf_patient_wise_dict)
+    for one_key in csf_patient_wise_dict:
+        print(one_key)
+        for i in range(5):
+            print(len(csf_patient_wise_dict[one_key][i]))
+    with open("test/CSF_dict.pkl", "wb") as f:
+        pickle.dump(csf_patient_wise_dict, f)
 
 
 def one_time_deal_CSF_specified(APOE, gender, csf_path=None, dictionary_pickle_path=None):
@@ -378,11 +401,11 @@ def one_time_plot_ct(ct: ConstTruthSpecified):
 if __name__ == "__main__":
     # # one_time_deal_PET()
     # # d = one_time_build_ptid_dictionary()
-    # # one_time_deal_CSF()
-    # # one_time_deal_PET()
+    one_time_deal_CSF()
+    # one_time_deal_PET()
     # # one_time_deal_PET_all()
-    one_time_compare("PET-A_full", "PET-A", ["PET-A_full_{}", "PET-A_{}"], "PET_A")
-    one_time_compare("PET-N_full", "PET-N", ["PET-N_full_{}", "PET-N_{}"], "PET_N")
+    # one_time_compare("PET-A_full", "PET-A", ["PET-A_full_{}", "PET-A_{}"], "PET_A")
+    # one_time_compare("PET-N_full", "PET-N", ["PET-N_full_{}", "PET-N_{}"], "PET_N")
     # one_time_build_ptid_dictionary_specifed()
     # for one_APOE in ["all", "zero", "one_two"]:
     #     for one_gender in ["all", "male", "female"]:

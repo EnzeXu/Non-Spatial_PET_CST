@@ -1,3 +1,5 @@
+import pickle
+
 import numpy as np
 import os
 import time
@@ -279,6 +281,84 @@ def draw_bar(title, names, data, save_path):
     plt.show()
 
 
+def package_figure_json(parameter_path, save_folder="figure"):
+    timestring = get_now_string()
+    json_folder = "{}/{}/".format(save_folder, timestring)
+    if not os.path.exists(json_folder):
+        os.makedirs(json_folder)
+    json_path = "{}/plot_{}.json".format(json_folder, timestring)
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--dataset", type=str, choices=["all", "chosen_0"], help="dataset strategy")
+    parser.add_argument("--start", type=str, choices=["fixed", "ranged"], help="start strategy")
+    parser.add_argument("--generation", default=1000, type=int, help="generation")
+    parser.add_argument("--pop_size", default=100, type=int, help="pop_size")
+    parser.add_argument("--model_name", default="none", type=str, help="model_name")
+    parser.add_argument("--option", type=str, choices=["option1", "option2"], help="option")
+    parser.add_argument("--tcsf_scaler", type=float, help="tcsf_scaler")
+    opt = parser.parse_args()
+    ct = ConstTruth(
+        csf_folder_path="data/CSF/",
+        pet_folder_path="data/PET/",
+        dataset=opt.dataset,
+        start=opt.start,
+        option=opt.option,
+        tcsf_scaler=opt.tcsf_scaler,
+    )
+    full_params = np.load(parameter_path)
+    params = full_params[:PARAM_NUM]
+    starts = full_params[-STARTS_NUM:]
+    ad = run(params, starts, time_string=timestring)
+    obj = dict()
+    obj["keys"] = ["APET", "TPET", "NPET", "ACSF", "TpCSF", "TCSF", "TtCSF"]
+    obj["labels"] = ["CN", "SMC", "EMCI", "LMCI", "AD"]
+    obj["label_t"] = [3.0, 6.0, 9.0, 11.0, 12.0]
+
+    # Predict Ylim
+    obj["predict_ylim"] = ad.predict_ylim
+
+    # Predict
+    obj_predict = dict()
+    for i, one_key in enumerate(obj.get("keys")):
+        obj_predict[one_key] = dict()
+        obj_predict[one_key]["x"] = list(ad.t)
+        obj_predict[one_key]["y"] = list(ad.output[i].flatten())
+    obj["predict"] = obj_predict
+
+    # Truth Ylim
+    obj["truth_ylim"] = ad.truth_ylim
+    obj["truth_ylim"]["NPET"] = [None, None]
+
+    # Truth
+    obj_truth = dict()
+    with open("test/PET_dict.pkl", "rb") as f:
+        pet_dict = pickle.load(f)
+    with open("test/CSF_dict.pkl", "rb") as f:
+        csf_dict = pickle.load(f)
+    for i, one_pet in enumerate(["APET", "TPET", "NPET"]):
+        obj_truth[one_pet] = dict()
+        for j, one_label in enumerate(obj.get("labels")):
+            obj_truth[one_pet][one_label] = list(pet_dict[i][j])
+    for i, one_pet in enumerate(["ACSF", "TpCSF", "TCSF", "TtCSF"]):
+        obj_truth[one_pet] = dict()
+        for j, one_label in enumerate(obj.get("labels")):
+            obj_truth[one_pet][one_label] = list(csf_dict[one_pet][j])
+    obj["truth"] = obj_truth
+
+    # Truth Scatters
+    obj_truth_plot = dict()
+
+    for one_key in obj.get("keys"):
+        obj_truth_plot[one_key] = dict()
+        obj_truth_plot[one_key]["x"] = list(ct.x[one_key].astype(float))
+        obj_truth_plot[one_key]["y"] = list(ct.y[one_key])
+
+    obj["truth_plot"] = obj_truth_plot
+    with open(json_path, "w") as f:
+        json.dump(obj, f, indent=4)
+
+
+
 def test_params(params_path="saves/params_default_46.npy"):
     params = np.load(params_path)
     params_dic = {PARAM_NAME_LIST[i]: "{} [{}, {}, {}]".format(params[i], PARAMS[i]["lb"], PARAMS[i]["init"], PARAMS[i]["ub"]) for i in range(PARAM_NUM)}
@@ -305,12 +385,19 @@ def test_params_starts(params_path="saves/params_default_57.npy"):
     return params_names, params, starts_names, starts
 
 if __name__ == "__main__":
+    # full_params = np.load("saves/params_20230113_102137_344977.npy")
+    # params = full_params[:PARAM_NUM]
+    # starts = full_params[-STARTS_NUM:]
+    # run(params, starts)
+    package_figure_json("saves/params_20230113_102137_344977.npy")
     # simulate(pop_size=30, generation=1000, method="DE")
-    params = np.asarray([PARAMS[i]["init"] for i in range(PARAM_NUM)])
-    starts = np.asarray([STARTS_WEIGHTS[i]["init"] for i in range(STARTS_NUM)])
-    settings = np.concatenate([params, starts])
-    print(settings.shape)
-    np.save("saves/params_default_57.npy", settings)
+
+    # params = np.asarray([PARAMS[i]["init"] for i in range(PARAM_NUM)])
+    # starts = np.asarray([STARTS_WEIGHTS[i]["init"] for i in range(STARTS_NUM)])
+    # settings = np.concatenate([params, starts])
+    # print(settings.shape)
+    # np.save("saves/params_default_57.npy", settings)
+
     # test_params("saves/params_20221112_205713.npy")
     # test_params("saves/params_20221112_225529.npy")
     # test_params()

@@ -1,9 +1,11 @@
 import os
+import pickle
 
 import matplotlib.pyplot as plt
 import numpy as np
 
 import time
+import json
 from datetime import datetime
 import argparse
 from scipy.integrate import odeint
@@ -11,7 +13,7 @@ from tqdm import tqdm
 
 # from parameters import *
 from config import Start, Config
-from utils import MultiSubplotDraw
+from utils import MultiSubplotDraw, ColorCandidate
 
 from const import *
 """
@@ -52,17 +54,38 @@ class ConstTruth:
         csf_folder_path, pet_folder_path = params["csf_folder_path"], params["pet_folder_path"]
         label_list = LABEL_LIST  # [[0, 2, 3, 4]]  # skip the second nodes (SMC)
         self.class_num = len(label_list)
+        self.lines = ["APET", "TPET", "NPET", "ACSF", "TpCSF", "TCSF", "TtCSF"]
+        self.y = dict()
+        self.x = dict()
+        self.y_original = dict()
+        self.x_original = dict()
+        assert params["start"] in ["ranged", "fixed"]
+        assert params["dataset"] in ["all", "chosen_0", "rebuild"]
         if "x" not in params:
-            assert params["start"] in ["ranged", "fixed"]
-            if params["start"] == "ranged":
+            if params["start"] in ["ranged", "rebuild"]:
                 self.x_all = np.asarray([3, 6, 9, 11, 12])
             else:
                 self.x_all = np.asarray([0, 3, 6, 8, 9])
         else:
             self.x_all = np.asarray(params.get("x"))
-        self.y = dict()
-        self.x = dict()
-        self.lines = ["APET", "TPET", "NPET", "ACSF", "TpCSF", "TCSF", "TtCSF"]
+        if params["dataset"] == "rebuild":
+            with open("data/rebuild_truth.pkl", "rb") as f:
+                rebuild_dic = pickle.load(f)
+            for one_line in self.lines:
+                if one_line in rebuild_dic:
+                    self.y[one_line] = rebuild_dic[one_line]["y"]
+                    self.x[one_line] = rebuild_dic[one_line]["x"]
+                else:
+                    self.y[one_line] = np.asarray([])
+                    self.x[one_line] = np.asarray([])
+            with open("data/plots.json", "r") as f:
+                plot_json = json.load(f)
+            for one_line in self.lines:
+                self.y_original[one_line] = np.asarray(plot_json["truth_plot"][one_line]["y"])
+                self.x_original[one_line] = np.asarray(plot_json["truth_plot"][one_line]["x"])
+            return
+
+
         for one_line in self.lines:
             self.y[one_line] = []
             self.x[one_line] = self.x_all
@@ -82,7 +105,7 @@ class ConstTruth:
         for one_key in self.lines:
             self.y[one_key] = np.asarray(self.y[one_key])
         self.y["NPET"] = 2.0 - self.y["NPET"]  # 1.0 - (self.y["NPET"] - np.min(self.y["NPET"])) / (np.max(self.y["NPET"]) - np.min(self.y["NPET"]))
-        assert params["dataset"] in ["all", "chosen_0"]
+
         if params["dataset"] == "chosen_0":
             for one_key in ["NPET"]:
                 self.y[one_key] = self.y[one_key][[]]
@@ -116,11 +139,14 @@ class ADSolver:
         self.output_names = ["$A_{PET}$", "$T_{PET}$", "$N_{PET}$", "$A_{CSF}$", "$T_{pCSF}$", "$T_{CSF}$",
                              "$T_{tCSF}$"]
         self.output_names_rest = ["$A_{m} Avg$", "$T_{m} Avg$", "$A_{o} Avg$", "$T_{o} Avg$", "$T_{p} Avg$"]
-        self.colors = ["red", "green", "blue", "cyan", "orange", "purple", "brown", "gray", "olive"]
+        self.n_color = 12
+        self.colors = ColorCandidate().get_color_list(self.n_color, light_rate=0.5)
         self.y = None
         self.output = None
         self.params = None
         self.starts_weights = None
+        self.truth_ylim = dict()
+        self.predict_ylim = dict()
         self.tol = 1e-4
         # print("atol = rtol = {}".format(self.tol))
 
@@ -260,7 +286,7 @@ class ADSolver:
 #        Af_ = k_cA * Ao * 1.0 / (numpy_safe_pow(K_cA, n_cA) / numpy_safe_pow(Am, n_cA) + 1.0)
 #        IACSF_ = k_sA * sum_func(Am) - k_I2CSF * IACSF
 #        ACSF_ = k_I2CSF * IACSF- k_yA * ACSF
-        ACSF_ = k_sA * sum_func((Am ** 2) / (Am ** 2 + k_acsf ** 2)) - k_yA * ACSF  # v0118 sqrt ! square ! log ! hill !
+        ACSF_ = k_sA * sum_func(Am) - k_yA * ACSF  # v0118 sqrt ! square ! log ! hill !
 #        ACSF_ = k_sA * sum_func(Am**2) - k_yA * ACSF   #NO###Am needs to be changed simultaneously
 #        ACSF_ = k_sA * sum_func(1.0 / (1.0 +  numpy_safe_pow(K_ACSF, n_ACSF) / numpy_safe_pow(Am, n_ACSF))) - k_yA * ACSF
         assert self.const_truth.params["option"] in ["option1", "option2"]
@@ -294,9 +320,9 @@ class ADSolver:
 
         Tf_ = k_cT * numpy_safe_pow(Tm, n_cT) * numpy_safe_pow(Tp, n_cTp) * numpy_safe_pow(To, n_cTo)
 
-        TCSF_ = k_sT * sum_func((Tm ** 2) / (Tm ** 2 + k_tcsf ** 2)) - k_yT * TCSF  # v0118 sqrt !
+        TCSF_ = k_sT * sum_func(Tm) - k_yT * TCSF  # v0118 sqrt !
 #        TCSF_ = k_sT * sum_func(Tm**2) - k_yT * TCSF
-        TpCSF_ = k_sTp * sum_func((Tp ** 2) / (Tp ** 2 + k_tcsf ** 2)) - k_yTp * TpCSF  # v0118 sqrt !
+        TpCSF_ = k_sTp * sum_func(Tp) - k_yTp * TpCSF  # v0118 sqrt !
 
         N_ = k_AN * 1.0 / (numpy_safe_pow(K_mAN, n_AN) / numpy_safe_pow((Ao + Af), n_AN) + 1.0) + k_TN * 1.0 / (
                     numpy_safe_pow(K_mTN, n_TN) / numpy_safe_pow((To + Tf), n_TN) + 1.0)
@@ -319,7 +345,7 @@ class ADSolver:
         save_path_rest = os.path.join(folder_path, "figure_rest_{}.png".format(time_string))
         m = MultiSubplotDraw(row=3, col=3, fig_size=(24, 18), tight_layout_flag=True, show_flag=False,
                              save_flag=save_flag,
-                             save_path=save_path_target, save_dpi=400)
+                             save_path=save_path_target, save_dpi=200)
         for i, (name, data, color, line_string) in enumerate(zip(self.output_names, self.output[:len(self.output_names)], self.colors[:len(self.output_names)], self.lines)):
             y_lists = data[:, :-int(3.0 / self.T_unit)] if self.const_truth.params["start"] == "fixed" else data
             ax = m.add_subplot(
@@ -331,8 +357,9 @@ class ADSolver:
                 legend_list=[name],
                 line_width=2,
             )
-            ax.scatter(x=self.const_truth.x[line_string], y=y_lists[0][(self.const_truth.x[line_string] / self.T_unit).astype(int)], s=100, facecolor=color, alpha=1.0, marker="x", linewidths=3, zorder=10)
+            ax.scatter(x=self.const_truth.x[line_string], y=y_lists[0][(self.const_truth.x[line_string] / self.T_unit).astype(int)], s=10, facecolor=self.colors[i + self.n_color], alpha=0.5, marker="x", linewidths=1, zorder=10)
             # ax.set_ylim([np.min(data[0]), np.max(data[0])])
+            self.predict_ylim[self.lines[i]] = list(ax.get_ylim())
 
             if self.const_truth:
                 x = self.const_truth.x[line_string]
@@ -340,7 +367,9 @@ class ADSolver:
                 # print(len(x), len(y))
                 ax2 = ax.twinx()
                 ax2.set_ylabel("truth points val", fontsize=15)
-                ax2.scatter(x=x, y=y, s=100, facecolor="black", alpha=0.5, marker="o", edgecolors='black', linewidths=1, zorder=10)
+                ax2.scatter(x=x, y=y, s=10, facecolor='black', alpha=0.5, marker="o", edgecolors='black', linewidths=1, zorder=10)
+                if self.const_truth.params["dataset"] == "rebuild":
+                    ax2.scatter(x=self.const_truth.x_original[line_string], y=self.const_truth.y_original[line_string], s=100, facecolor="none", marker="d", edgecolors='#00ff00', linewidths=3, zorder=10)
                 # if line_string in ["NPET"]:
                 #     ax2.scatter(x=x, y=y, s=100, facecolor="blue", alpha=0.5, marker="d",
                 #                 edgecolors='black', linewidths=1,
@@ -365,6 +394,7 @@ class ADSolver:
                     elif line_string in ["APET", "TPET", "TpCSF", "TCSF", "TtCSF"]:
                         ax2.set_ylim([ylim_top - (ylim_top - ylim_bottom) / (np.max(curve_data) - np.min(curve_data)) * (np.max(curve_data) - np.min(data[0])), ylim_top])
                         # ax2.set_ylim([ylim_top - (ylim_top - ylim_bottom) / (data[0][int(x[0] / self.T_unit)] - data[0][int(x[-1] / self.T_unit)]) * (data[0][0] - data[0][int(x[-1] / self.T_unit)]), ylim_top])
+                self.truth_ylim[self.lines[i]] = list(ax2.get_ylim())
 
 
         m.add_subplot(
@@ -381,7 +411,7 @@ class ADSolver:
 
         m = MultiSubplotDraw(row=2, col=3, fig_size=(24, 12), tight_layout_flag=True, show_flag=False,
                              save_flag=save_flag,
-                             save_path=save_path_rest, save_dpi=400)
+                             save_path=save_path_rest, save_dpi=200)
         for name, data, color in zip(self.output_names_rest, self.output[-len(self.output_names_rest):],
                                      self.colors[:len(self.output_names_rest)]):
             m.add_subplot(
@@ -513,6 +543,7 @@ def run(params=None, starts=None, time_string=None, opt=None):
     print("loss: {}".format(sum(loss) + csf_rate_loss))
     print("loss parts: {} csf match loss: {}".format(list(loss), csf_rate_loss))
     truth.draw(opt, time_string=time_string, given_loss=loss)
+    return truth
 
 
 if __name__ == "__main__":

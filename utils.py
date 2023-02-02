@@ -469,6 +469,42 @@ def draw_three_dimension(
     plt.close()
 
 
+class ColorCandidate:
+    def __init__(self):
+        self.raw_rgb = [
+            (255, 0, 0),
+            (0, 0, 255),
+            (0, 128, 0),
+            (255, 127, 0),
+            (255, 0, 127),
+            (0, 128, 127),
+            (127, 128, 0),
+            (127, 0, 255),
+            (0, 64, 255),
+            (150, 10, 100),
+            (150, 50, 20),
+            (100, 75, 20),
+            (20, 75, 100),
+            (20, 50, 150),
+            (100, 10, 150),
+        ]
+
+    @staticmethod
+    def lighter(color_pair, rate=0.5):
+        return [int(color_pair[i] + (255 - color_pair[i]) * rate) for i in range(3)]
+
+    def get_color_list(self, n, light_rate=0.5):
+        assert n <= 15
+        return [self.encode(item) for item in self.raw_rgb[:n]] + [self.encode(self.lighter(item, light_rate)) for item in self.raw_rgb[:n]]
+
+    @staticmethod
+    def decode(color_str):
+        return [int("0x" + color_str[2 * i + 1: 2 * i + 3], 16) for i in range(3)]
+
+    @staticmethod
+    def encode(color_pair):
+        return "#" + "".join([str(hex(item))[2:].zfill(2) for item in color_pair])
+
 if __name__ == "__main__":
     # T = 10.0
     # T_unit = 1e-5
