@@ -16,13 +16,13 @@ STARTS_NAME_LIST = ["Am", "Ao", "Af", "ACSF", "Tm", "Tp", "To", "Tf", "TCSF", "T
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--dataset", type=str, help="dataset strategy")
-parser.add_argument("--start", type=str, help="start strategy")
-parser.add_argument("--generation", type=int, help="generation")
-parser.add_argument("--pop_size", type=int, help="pop_size")
-parser.add_argument("--model_name", default="none", type=str, help="model_name")
+parser.add_argument("--dataset", type=str, choices=["chosen_0", "all", "rebuild"], help="dataset strategy")
+parser.add_argument("--start", type=str, choices=["ranged", "fixed"], help="start strategy")
+parser.add_argument("--generation", type=int, default=1000, help="generation, default: 1000")
+parser.add_argument("--pop_size", type=int, default=50, help="pop_size, default: 50")
+parser.add_argument("--model_name", default="none", type=str, help="model_name, can be any string")
 parser.add_argument("--option", type=str, choices=["option1", "option2"], help="option")
-parser.add_argument("--tcsf_scaler", type=float, help="tcsf_scaler")
+parser.add_argument("--tcsf_scaler", type=float, help="tcsf_scaler, e.g., 0.3, 0.4, 0.5")
 opt = parser.parse_args()
 
 assert opt.start in ["fixed", "ranged"]
