@@ -332,7 +332,7 @@ if opt.option == "option1":
         {
             "id": 8,
             "name": "k_pTm",
-            "init": 15,  # 1.02346459e-03,#0.001,
+            "init": 10,#15,  # 1.02346459e-03,#0.001,
             "lb": 1 * LOWFOLD,
             "ub": 10 * UPFOLD
         },
@@ -346,14 +346,14 @@ if opt.option == "option1":
         {
             "id": 10,
             "name": "k_ph1",
-            "init": 2.5*5,  # 1.32419387e+00,#0.5,
+            "init": 2.5*2,#2.5*5,  # 1.32419387e+00,#0.5,
             "lb": 0.5 * LOWFOLD,
             "ub": 5.0 * UPFOLD
         },
         {
             "id": 11,
             "name": "k_ph2",
-            "init": 3*5,  # 2.05606939e+00,#2.0,
+            "init": 3*2,#3*5,  # 2.05606939e+00,#2.0,
             "lb": 6 * LOWFOLD,
             "ub": 6  * UPFOLD
         },
