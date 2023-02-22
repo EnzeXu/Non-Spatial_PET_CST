@@ -427,7 +427,7 @@ def f_csf_rate(x, thr=1.7052845384621318, tol=0.2, p=1.0):
     return max((x - thr * (1 + tol)) * p, (thr * (1 - tol) - x) * p, 0)
 
 def pet_rate(x, thr=0.05, tol=0.2, p=1.0):
-    return max((x - thr) * p, 0)
+    return max((thr - x) * p, 0)
 
 
 def loss_func(params, starts_weight, ct):
