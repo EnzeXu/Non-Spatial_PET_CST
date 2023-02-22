@@ -426,6 +426,9 @@ class ADSolver:
 def f_csf_rate(x, thr=1.7052845384621318, tol=0.2, p=1.0):
     return max((x - thr * (1 + tol)) * p, (thr * (1 - tol) - x) * p, 0)
 
+def pet_rate(x, thr=0.05, tol=0.2, p=1.0):
+    return max((x - thr) * p, 0)
+
 
 def loss_func(params, starts_weight, ct):
     # print("calling loss_func..")
@@ -471,7 +474,9 @@ def loss_func(params, starts_weight, ct):
     # record = record[[0, 1, 3, 4, 5, 6]]
     csf_rate = \
         f_csf_rate(np.max(truth.output[3][0]) / np.max(truth.output[6][0]), thr=1.7052845384621318, tol=0.2, p=1.0) + \
-        f_csf_rate(np.max(truth.output[4][0]) / np.max(truth.output[5][0]), thr=0.7142857142857143, tol=0.2, p=1.0)
+        f_csf_rate(np.max(truth.output[4][0]) / np.max(truth.output[5][0]), thr=0.7142857142857143, tol=0.2, p=1.0) + \
+        pet_rate((np.max(truth.output[0][0]) - np.min(truth.output[0][0])) / np.max(truth.output[0][0]), thr=0.05, tol=0.2, p=1.0) + \
+        pet_rate((np.max(truth.output[1][0]) - np.min(truth.output[1][0])) / np.max(truth.output[1][0]), thr=0.05, tol=0.2, p=1.0)
     return record, csf_rate  # remove NPET here
 
 
