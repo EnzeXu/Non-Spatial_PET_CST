@@ -151,8 +151,66 @@ def one_time_build_A():
             "test_nsga.py",
             dic)
 
+def one_time_build_S():
+    plans = [
+        # ["A1", 1000, "all", "fixed", 100],
+        # ["A1", 2000, "all", "fixed", 100],
+        # ["A2", 1000, "all", "ranged", 100],
+        # ["A2", 2000, "all", "ranged", 100],
+        # ["A3", 1000, "chosen_0", "fixed", 100],
+        # ["A3", 2000, "chosen_0", "fixed", 100],
+        # ["A4", 1000, "chosen_0", "ranged", 100],
+        # ["A4", 2000, "chosen_0", "ranged", 100],
+        # ["A1", 1000, "all", "fixed", 100],
+        # ["A1", 3000, "all", "fixed", 100],
+        # ["A1", 5000, "all", "fixed", 100],
+        # ["A1", 7000, "all", "fixed", 100],
+        # ["A2", 1000, "all", "ranged", 100],
+        # ["A2", 3000, "all", "ranged", 100],
+        # ["A2", 5000, "all", "ranged", 100],
+        # ["A2", 7000, "all", "ranged", 100],
+        # ["A1", 1250, "all", "fixed", 100],
+        # ["A1", 1500, "all", "fixed", 100],
+        # ["A1", 1750, "all", "fixed", 100],
+        # ["A1", 2000, "all", "fixed", 100],
+        # ["A2", 1250, "all", "ranged", 100],
+        # ["A2", 1500, "all", "ranged", 100],
+        # ["A2", 1750, "all", "ranged", 100],
+        # ["A2", 2000, "all", "ranged", 100],
+        # ["A3-1", 500, "chosen_0", "fixed", 100, "option1"],
+        # ["A3-1", 1000, "chosen_0", "fixed", 100, "option1"],
+        # ["A3-1", 1500, "chosen_0", "fixed", 100, "option1"],
+        # ["A3-1", 2000, "chosen_0", "fixed", 100, "option1"],
+        # ["A3-2", 500, "chosen_0", "fixed", 100, "option2"],
+        # ["A3-2", 1000, "chosen_0", "fixed", 100, "option2"],
+        # ["A3-2", 1500, "chosen_0", "fixed", 100, "option2"],
+        # ["A3-2", 2000, "chosen_0", "fixed", 100, "option2"],
+        ["S1-500", 500, "chosen_0", "ranged", 100, "option1", 0.3],
+        ["S1-600", 600, "chosen_0", "ranged", 100, "option1", 0.3],
+        ["S1-700", 700, "chosen_0", "ranged", 100, "option1", 0.3],
+        ["S1-800", 800, "chosen_0", "ranged", 100, "option1", 0.3],
 
+        ["S2-500", 500, "chosen_0", "ranged", 100, "option1", 0.3],
+        ["S2-600", 600, "chosen_0", "ranged", 100, "option1", 0.3],
+        ["S2-700", 700, "chosen_0", "ranged", 100, "option1", 0.3],
+        ["S2-800", 800, "chosen_0", "ranged", 100, "option1", 0.3],
+
+    ]
+    dic = dict()
+    for one_plan in plans:
+        dic["model_name"] = "{0}_{1:.1f}".format(one_plan[0], one_plan[6])
+        dic["generation"] = one_plan[1]
+        dic["dataset"] = one_plan[2]
+        dic["start"] = one_plan[3]
+        dic["pop_size"] = one_plan[4]
+        dic["option"] = one_plan[5]
+        dic["tcsf_scaler"] = one_plan[6]
+
+        one_slurm(
+            "{}_{}".format(dic["model_name"], one_plan[1]),
+            "test_nsga.py",
+            dic)
 
 if __name__ == "__main__":
-    one_time_build_A()
+    one_time_build_S()
     pass
