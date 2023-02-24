@@ -9,8 +9,8 @@ LABEL_ID = {
 }
 PARAM_NUM = 51 - 5 + 1 + 2  # n_a2Tp + ktcsf & tacsf
 #PARAM_NUM = 51 - 4
-UPFOLD = 10
-LOWFOLD = 0.1
+UPFOLD = 100
+LOWFOLD = 0.01
 STARTS_NUM = 11
 STARTS_NAME_LIST = ["Am", "Ao", "Af", "ACSF", "Tm", "Tp", "To", "Tf", "TCSF", "TpCSF", "N"]
 
@@ -276,36 +276,36 @@ if opt.option == "option1":
         {
             "id": 0,
             "name": "k_p1Am",
-            "init": 1.89870894e-02,  # 0.002,
-            "lb": 0.01 * LOWFOLD,  # 0.5,
+            "init": 0.02,#1.89870894e-02,  # 0.002,
+            "lb": 0.02 * LOWFOLD,  # 0.5,
             "ub": 0.02 * UPFOLD  # 2.0
         },
         {
             "id": 1,
             "name": "k_p2Am",
-            "init": 1.28389723e-03,  # 0.001,#0.0,
-            "lb": 0.0,
-            "ub": 0.1
+            "init": 0.01,#1.28389723e-03,  # 0.001,#0.0,
+            "lb": 0.01 * LOWFOLD,
+            "ub": 0.01 * UPFOLD,
         },
         {
             "id": 2,
             "name": "k_dAm",
-            "init": 5.51210297e-03,  # 0.15,#0.08,
+            "init": 0.005,#5.51210297e-03,  # 0.15,#0.08,
             "lb": 0.005 * LOWFOLD,
-            "ub": 0.5 * UPFOLD
+            "ub": 0.005 * UPFOLD
         },
         {
             "id": 3,
             "name": "k_diA",
-            "init": 2.15326083e-02,  # 0.2,#0.2,#1.0,
+            "init": 0.02,#2.15326083e-02,  # 0.2,#0.2,#1.0,
             "lb": 0.02 * LOWFOLD,
-            "ub": 5.0 * UPFOLD
+            "ub": 0.02 * UPFOLD
         },
         {
             "id": 4,
             "name": "k_cA",
-            "init": 3.56228549e+00,  # 0.1,#10,#15.0,
-            "lb": 0.1 * LOWFOLD,
+            "init": 3.5,#3.56228549e+00,  # 0.1,#10,#15.0,
+            "lb": 3.5 * LOWFOLD,
             "ub": 3.5 * UPFOLD
         },
         {
@@ -313,126 +313,126 @@ if opt.option == "option1":
             "name": "k_sA",
             "init": 7e-5,  # 6.86585495e-04,#0.003,#0.025,
             "lb": 7e-5 * LOWFOLD,
-            "ub": 7e-4 * UPFOLD
+            "ub": 7e-5 * UPFOLD
         },
         {
             "id": 6,
             "name": "k_dAo",
-            "init": 2.13832924e-02,  # 0.1,
-            "lb": 0.0,
-            "ub": 0.2 * UPFOLD
+            "init": 2e-02,#2.13832924e-02,  # 0.1,
+            "lb": 2e-02 * LOWFOLD,
+            "ub": 2e-02 * UPFOLD
         },
         {
             "id": 7,
             "name": "k_yA",
-            "init": 8.02786625e-04,  # 0.02,#0.04,
-            "lb": 0.0008 * LOWFOLD,
-            "ub": 0.2 * UPFOLD
+            "init": 8e-04,#8.02786625e-04,  # 0.02,#0.04,
+            "lb": 8e-04 * LOWFOLD,
+            "ub": 8e-04 * UPFOLD
         },
         {
             "id": 8,
             "name": "k_pTm",
-            "init": 15,#10,#15,  # 1.02346459e-03,#0.001,
-            "lb": 1 * LOWFOLD,
+            "init": 10,#10,#15,  # 1.02346459e-03,#0.001,
+            "lb": 10 * LOWFOLD,
             "ub": 10 * UPFOLD
         },
         {
             "id": 9,
             "name": "k_dTm",
             "init": 0.5,  # 4.51742661e-01,#0.5,
-            "lb": 0.1 * LOWFOLD,
-            "ub": 2.5 * UPFOLD
+            "lb": 0.5 * LOWFOLD,
+            "ub": 0.5 * UPFOLD
         },
         {
             "id": 10,
             "name": "k_ph1",
-            "init": 2.5*5,#2.5*2,#2.5*5,  # 1.32419387e+00,#0.5,
-            "lb": 0.5 * LOWFOLD,
-            "ub": 5.0 * UPFOLD
+            "init": 12,#2.5*2,#2.5*5,  # 1.32419387e+00,#0.5,
+            "lb": 12 * LOWFOLD,
+            "ub": 12 * UPFOLD
         },
         {
             "id": 11,
             "name": "k_ph2",
-            "init": 3*5,#3*2,#3*5,  # 2.05606939e+00,#2.0,
-            "lb": 6 * LOWFOLD,
-            "ub": 6  * UPFOLD
+            "init": 15,#3*2,#3*5,  # 2.05606939e+00,#2.0,
+            "lb": 15 * LOWFOLD,
+            "ub": 15  * UPFOLD
         },
         {
             "id": 12,
             "name": "k_deph",
-            "init": 9.97622454e-01,  # 1.0,#6.0,
+            "init": 1.0,#9.97622454e-01,  # 1.0,#6.0,
             "lb": 1.0 * LOWFOLD,
-            "ub": 30.0 * UPFOLD
+            "ub": 1.0 * UPFOLD
         },
         {
             "id": 13,
             "name": "k_diT",
-            "init": 0.68,  # 6.80829297e-01,#0.5,
-            "lb": 0.1 * LOWFOLD,
-            "ub": 2.5 * UPFOLD
+            "init": 0.7,  # 6.80829297e-01,#0.5,
+            "lb": 0.7 * LOWFOLD,
+            "ub": 0.7 * UPFOLD
         },
         {
             "id": 14,
             "name": "k_cT",
             "init": 0.1,  # 0.04,#3.93543647e-02,#0.045,#0.045,
-            "lb": 0.01 * LOWFOLD,
-            "ub": 0.225 * UPFOLD
+            "lb": 0.1 * LOWFOLD,
+            "ub": 0.1 * UPFOLD
         },
         {
             "id": 15,
             "name": "k_sT",
-            "init": 5,  # 1,#1.46860174e-01,#1,#4.0,
-            "lb": 0.5 * LOWFOLD,
-            "ub": 20.0 * UPFOLD
+            "init": 5.0,  # 1,#1.46860174e-01,#1,#4.0,
+            "lb": 5.0 * LOWFOLD,
+            "ub": 5.0 * UPFOLD
         },
         {
             "id": 16,
             "name": "k_dTp",
-            "init": 1.60981382e-01,  # 0.1,
-            "lb": 0.1 * LOWFOLD,
-            "ub": 5 * UPFOLD
+            "init": 0.2,#1.60981382e-01,  # 0.1,
+            "lb": 0.2 * LOWFOLD,
+            "ub": 0.2 * UPFOLD
         },
         {
             "id": 17,
             "name": "k_sTp",
             "init": 5,  # 3.00026704e+00,#3.0,
-            "lb": 0.5 * LOWFOLD,
-            "ub": 15.0 * UPFOLD
+            "lb": 5 * LOWFOLD,
+            "ub": 5 * UPFOLD
         },
         {
             "id": 18,
             "name": "k_dTo",
             "init": 0.003,  # 3.00776991e-03,# 0.005,#0.01,
             "lb": 0.003 * LOWFOLD,
-            "ub": 0.03 * UPFOLD
+            "ub": 0.003 * UPFOLD
         },
         {
             "id": 19,
             "name": "k_yT",
-            "init": 2.44026659e+00,  # 2.0,#10.0,
-            "lb": 2.0 * LOWFOLD,
-            "ub": 50.0 * UPFOLD
+            "init": 2.5,#2.44026659e+00,  # 2.0,#10.0,
+            "lb": 2.5 * LOWFOLD,
+            "ub": 2.5 * UPFOLD
         },
         {
             "id": 20,
             "name": "k_yTp",
-            "init": 9.98884700e+00,  # 10.0,
-            "lb": 2.0 * LOWFOLD,
-            "ub": 50.0 * UPFOLD
+            "init": 10.0,#9.98884700e+00,  # 10.0,
+            "lb": 10.0 * LOWFOLD,
+            "ub": 10.0 * UPFOLD
         },
         {
             "id": 21,
             "name": "k_AN",
-            "init": 7.52832341e+00,  # 2.0,
-            "lb": 5 * LOWFOLD,
-            "ub": 10.0 * UPFOLD
+            "init": 7.5,#7.52832341e+00,  # 2.0,
+            "lb": 7.5 * LOWFOLD,
+            "ub": 7.5 * UPFOLD
         },
         {
             "id": 22,
             "name": "k_TN",
-            "init": 1.11001511e+00,  # 4.0,
-            "lb": 1 * LOWFOLD,
-            "ub": 20.0 * UPFOLD
+            "init": 1.0,#1.11001511e+00,  # 4.0,
+            "lb": 1.0 * LOWFOLD,
+            "ub": 1.0 * UPFOLD
         },
         {
             "id": 23,
@@ -445,8 +445,8 @@ if opt.option == "option1":
             "id": 24,
             "name": "k_a2A",
             "init": 100,  # 7.11387924e+00,#24.0,
-            "lb": 20 * LOWFOLD,
-            "ub": 500.0 * UPFOLD
+            "lb": 100 * LOWFOLD,
+            "ub": 100.0 * UPFOLD
         },
         {
             "id": 25,
@@ -458,70 +458,70 @@ if opt.option == "option1":
         {
             "id": 26,
             "name": "k_a2T",
-            "init": 500,  # 2.00000000e+01,#20.0,#60.0,
-            "lb": 50.0 * LOWFOLD,
-            "ub": 300.0 * UPFOLD
+            "init": 500.0,  # 2.00000000e+01,#20.0,#60.0,
+            "lb": 500.0 * LOWFOLD,
+            "ub": 500.0 * UPFOLD
         },
         {
             "id": 27,
             "name": "K_mTA",
-            "init": 5.17340221e-12,  # 1e-10,
-            "lb": 2e-12 * LOWFOLD,
-            "ub": 5 * UPFOLD
+            "init": 0.001,#5.17340221e-12,  # 1e-10,
+            "lb": 0.0001 * LOWFOLD,
+            "ub": 0.01 * UPFOLD
         },
         {
             "id": 28,
             "name": "K_mAT",
-            "init": 1.78187831e-04,  # 0.0005,
+            "init": 0.001,#1.78187831e-04,  # 0.0005,
             "lb": 0.0001 * LOWFOLD,
             "ub": 0.0025 * UPFOLD
         },
         {
             "id": 29,
             "name": "K_mAN",
-            "init": 3.22245152e-08,  # 1e-08,
-            "lb": 2e-09 * LOWFOLD,
-            "ub": 5e-08 * UPFOLD
+            "init": 3e-4,#3.22245152e-08,  # 1e-08,
+            "lb": 3e-5 * LOWFOLD,
+            "ub": 3e-3 * UPFOLD
         },
         {
             "id": 30,
             "name": "K_mTN",
-            "init": 2.92220667e-14,  # 1e-12,
-            "lb": 2e-14 * LOWFOLD,
-            "ub": 5e-12 * UPFOLD
+            "init": 3e-3,#2.92220667e-14,  # 1e-12,
+            "lb": 3e-4 * LOWFOLD,
+            "ub": 3e-2 * UPFOLD
         },
         {
             "id": 31,
             "name": "K_mT2",
             "init": 0.1,  # 4.69825956e-14,#1.6e-12,
-            "lb": 0.1 * LOWFOLD,
-            "ub": 0.1 * UPFOLD
+            "lb": 0.01 * LOWFOLD,
+            "ub": 1 * UPFOLD
         },
         {
             "id": 32,
             "name": "K_mA2",
-            "init": 1.00645539e-08,  # 1e-08,
-            "lb": 2e-08 * LOWFOLD,
-            "ub": 5e-06 * UPFOLD
+            "init": 1e-4,#1.00645539e-08,  # 1e-08,
+            "lb": 1e-5 * LOWFOLD,
+            "ub": 1e-3 * UPFOLD
         },
         {
             "id": 33,
             "name": "n_TA",
-            "init": 2.03963910e+00,  # 2.0,
+            "init": 2,#2.03963910e+00,  # 2.0,
             "lb": 1.0,
             "ub": 12.0
         },
         {
             "id": 34,
             "name": "n_cA",
-            "init": 3.90702369e+00,  # 4.0,
+            "init": 4,#3.90702369e+00,  # 4.0,
             "lb": 1.0,
             "ub": 12.0
         },
         {
             "id": 35,
             "name": "n_AT",
-            "init": 1.01109972e+00,  # 1.0,
+            "init": 1,#1.01109972e+00,  # 1.0,
             "lb": 1.0,
             "ub": 12.0
         },
@@ -535,42 +535,42 @@ if opt.option == "option1":
         {
             "id": 37,
             "name": "n_cTp",
-            "init": 1.01336043e+00,  # 4.0,
+            "init": 1,#1.01336043e+00,  # 4.0,
             "lb": 1.0,
             "ub": 12.0
         },
         {
             "id": 38,
             "name": "n_cTo",
-            "init": 1.00000350e+00,  # 1.0,
+            "init": 1,#1.00000350e+00,  # 1.0,
             "lb": 1.0,
             "ub": 12.0
         },
         {
             "id": 39,
             "name": "n_AN",
-            "init": 2.62861359e+00,  # 2.0,
+            "init": 2,#2.62861359e+00,  # 2.0,
             "lb": 1.0,
             "ub": 12.0
         },
         {
             "id": 40,
             "name": "n_TN",
-            "init": 1.87556484e+00,  # 2.0,
+            "init": 2,#1.87556484e+00,  # 2.0,
             "lb": 1.0,
             "ub": 12.0
         },
         {
             "id": 41,  # 2;[1,12]
             "name": "n_a1A",
-            "init": 1.32987400e+00,  # 2.0,
+            "init": 1,#1.32987400e+00,  # 2.0,
             "lb": 1.0,
             "ub": 12.0
         },
         {
             "id": 42,  # 8;[1,12]
             "name": "n_a2A",
-            "init": 7.63672859e+00,  # 8.0,
+            "init": 8,#7.63672859e+00,  # 8.0,
             "lb": 1.0,
             "ub": 12.0
         },
@@ -591,7 +591,7 @@ if opt.option == "option1":
         {
             "id": 45,
             "name": "n_a1Tp",
-            "init": 2.23999459e+00,  # 2.0,
+            "init": 2,#2.23999459e+00,  # 2.0,
             "lb": 1.0,
             "ub": 12.0
         },
