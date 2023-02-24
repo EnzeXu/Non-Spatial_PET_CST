@@ -186,15 +186,7 @@ def one_time_build_S():
         # ["A3-2", 1500, "chosen_0", "fixed", 100, "option2"],
         # ["A3-2", 2000, "chosen_0", "fixed", 100, "option2"],
         ["S1-500", 500, "chosen_0", "ranged", 100, "option1", 0.3],
-        ["S1-600", 600, "chosen_0", "ranged", 100, "option1", 0.3],
-        ["S1-700", 700, "chosen_0", "ranged", 100, "option1", 0.3],
-        ["S1-800", 800, "chosen_0", "ranged", 100, "option1", 0.3],
-
-        ["S2-500", 500, "chosen_0", "ranged", 100, "option1", 0.3],
-        ["S2-600", 600, "chosen_0", "ranged", 100, "option1", 0.3],
-        ["S2-700", 700, "chosen_0", "ranged", 100, "option1", 0.3],
-        ["S2-800", 800, "chosen_0", "ranged", 100, "option1", 0.3],
-
+        ["S1-1000", 1000, "chosen_0", "ranged", 100, "option1", 0.3],
     ]
     dic = dict()
     for one_plan in plans:
