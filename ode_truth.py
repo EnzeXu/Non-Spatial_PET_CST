@@ -110,9 +110,12 @@ class ConstTruth:
             for one_key in ["NPET"]:
                 self.y[one_key] = self.y[one_key][[]]
                 self.x[one_key] = self.x[one_key][[]]
-            for one_key in ["ACSF", "TpCSF", "TCSF", "TtCSF"]:
+            for one_key in ["ACSF", "TCSF", "TtCSF"]:
                 self.y[one_key] = self.y[one_key][[0, 2, 3, 4]]
                 self.x[one_key] = self.x[one_key][[0, 2, 3, 4]]
+            for one_key in ["TpCSF"]:
+                self.y[one_key] = self.y[one_key][[0, 2, 4]]
+                self.x[one_key] = self.x[one_key][[0, 2, 4]]
         else:
             for one_key in ["NPET"]:
                 self.y[one_key] = self.y[one_key][[]]
@@ -361,7 +364,7 @@ class ADSolver:
                 legend_list=[name],
                 line_width=2,
             )
-            ax.scatter(x=self.const_truth.x[line_string], y=y_lists[0][(self.const_truth.x[line_string] / self.T_unit).astype(int)], s=10, facecolor=self.colors[i + self.n_color], alpha=0.5, marker="x", linewidths=1, zorder=10)
+            ax.scatter(x=self.const_truth.x[line_string], y=y_lists[0][(self.const_truth.x[line_string] / self.T_unit).astype(int)], s=100, facecolor=self.colors[i + self.n_color], alpha=0.5, marker="x", linewidths=1, zorder=10)
             # ax.set_ylim([np.min(data[0]), np.max(data[0])])
             self.predict_ylim[self.lines[i]] = list(ax.get_ylim())
 
@@ -371,7 +374,7 @@ class ADSolver:
                 # print(len(x), len(y))
                 ax2 = ax.twinx()
                 ax2.set_ylabel("truth points val", fontsize=15)
-                ax2.scatter(x=x, y=y, s=10, facecolor='black', alpha=0.5, marker="o", edgecolors='black', linewidths=1, zorder=10)
+                ax2.scatter(x=x, y=y, s=100, facecolor='black', alpha=0.5, marker="o", edgecolors='black', linewidths=1, zorder=10)
                 if self.const_truth.params["dataset"] == "rebuild":
                     ax2.scatter(x=self.const_truth.x_original[line_string], y=self.const_truth.y_original[line_string], s=100, facecolor="none", marker="d", edgecolors='#00ff00', linewidths=3, zorder=10)
                 # if line_string in ["NPET"]:
