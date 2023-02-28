@@ -216,7 +216,7 @@ def simulate(pop_size=50, generation=100, method="GA"):
         f.write("old_loss: {}\n".format(old_loss))
         f.write("new_loss: {}\n".format(new_loss))
     with open("simulation_record.txt", "a") as f:
-        f.write("{0}, {1}, {2}, {3:.4f}, {4}, {5}, {6}, {7}, {8}, {9:.12f}, {10:.12f}, {11}, {12:.2f}\n".format(
+        f.write("{0},{1},{2},{3:.4f},{4},{5},{6},{7},{8},{9:.12f},{10:.12f},{11},{12:.2f}\n".format(
             opt.model_name,
             time_string_start,
             time_string_end,
