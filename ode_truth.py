@@ -364,7 +364,7 @@ class ADSolver:
                 legend_list=[name],
                 line_width=2,
             )
-            ax.scatter(x=self.const_truth.x[line_string], y=y_lists[0][(self.const_truth.x[line_string] / self.T_unit).astype(int)], s=100, facecolor=self.colors[i + self.n_color], alpha=0.5, marker="x", linewidths=1, zorder=10)
+            ax.scatter(x=self.const_truth.x[line_string], y=y_lists[0][(self.const_truth.x[line_string] / self.T_unit).astype(int)], s=100, facecolor=self.colors[i + self.n_color], alpha=0.8, marker="x", linewidths=1, zorder=10)
             # ax.set_ylim([np.min(data[0]), np.max(data[0])])
             self.predict_ylim[self.lines[i]] = list(ax.get_ylim())
 
@@ -374,7 +374,7 @@ class ADSolver:
                 # print(len(x), len(y))
                 ax2 = ax.twinx()
                 ax2.set_ylabel("truth points val", fontsize=15)
-                ax2.scatter(x=x, y=y, s=100, facecolor='black', alpha=0.5, marker="o", edgecolors='black', linewidths=1, zorder=10)
+                ax2.scatter(x=x, y=y, s=100, facecolor='black', alpha=0.8, marker="o", edgecolors='black', linewidths=1, zorder=10)
                 if self.const_truth.params["dataset"] == "rebuild":
                     ax2.scatter(x=self.const_truth.x_original[line_string], y=self.const_truth.y_original[line_string], s=100, facecolor="none", marker="d", edgecolors='#00ff00', linewidths=3, zorder=10)
                 # if line_string in ["NPET"]:
@@ -497,12 +497,12 @@ def loss_func(params, starts_weight, ct):
         f_csf_rate(np.max(truth.output[3][0]) / np.max(truth.output[6][0]), thr=1.7052845384621318, tol=0.2, p=1.0) + \
         f_csf_rate(np.max(truth.output[4][0]) / np.max(truth.output[5][0]), thr=0.7142857142857143, tol=0.2, p=1.0)
     csf_rate += \
-        limit_rate((np.max(truth.output[0][0]) - np.min(truth.output[0][0])) / np.max(truth.output[0][0]), thr=0.05, tol=0.2, p=1.0) + \
-        limit_rate((np.max(truth.output[1][0]) - np.min(truth.output[1][0])) / np.max(truth.output[1][0]), thr=0.05, tol=0.2, p=1.0) + \
-        limit_rate((np.max(truth.output[3][0]) - np.min(truth.output[3][0])) / np.max(truth.output[3][0]), thr=0.05, tol=0.2, p=1.0) + \
-        limit_rate((np.max(truth.output[4][0]) - np.min(truth.output[4][0])) / np.max(truth.output[4][0]), thr=0.05, tol=0.2, p=1.0) + \
-        limit_rate((np.max(truth.output[5][0]) - np.min(truth.output[5][0])) / np.max(truth.output[5][0]), thr=0.05, tol=0.2, p=1.0) + \
-        limit_rate((np.max(truth.output[6][0]) - np.min(truth.output[6][0])) / np.max(truth.output[6][0]), thr=0.05, tol=0.2, p=1.0)
+        limit_rate((np.max(truth.output[0][0]) - np.min(truth.output[0][0])) / np.max(truth.output[0][0]), thr=0.15, tol=0.2, p=1.0) + \
+        limit_rate((np.max(truth.output[1][0]) - np.min(truth.output[1][0])) / np.max(truth.output[1][0]), thr=0.15, tol=0.2, p=1.0) + \
+        limit_rate((np.max(truth.output[3][0]) - np.min(truth.output[3][0])) / np.max(truth.output[3][0]), thr=0.15, tol=0.2, p=1.0) + \
+        limit_rate((np.max(truth.output[4][0]) - np.min(truth.output[4][0])) / np.max(truth.output[4][0]), thr=0.15, tol=0.2, p=1.0) + \
+        limit_rate((np.max(truth.output[5][0]) - np.min(truth.output[5][0])) / np.max(truth.output[5][0]), thr=0.15, tol=0.2, p=1.0) + \
+        limit_rate((np.max(truth.output[6][0]) - np.min(truth.output[6][0])) / np.max(truth.output[6][0]), thr=0.15, tol=0.2, p=1.0)
 
     return record, csf_rate  # remove NPET here
 
