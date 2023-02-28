@@ -364,7 +364,7 @@ class ADSolver:
                 legend_list=[name],
                 line_width=2,
             )
-            ax.scatter(x=self.const_truth.x[line_string], y=y_lists[0][(self.const_truth.x[line_string] / self.T_unit).astype(int)], s=100, facecolor=self.colors[i + self.n_color], alpha=0.8, marker="x", linewidths=1, zorder=10)
+            ax.scatter(x=self.const_truth.x[line_string], y=y_lists[0][(self.const_truth.x[line_string] / self.T_unit).astype(int)], s=100, facecolor=self.colors[i + self.n_color], alpha=0.8, marker="x", linewidths=10, zorder=10)
             # ax.set_ylim([np.min(data[0]), np.max(data[0])])
             self.predict_ylim[self.lines[i]] = list(ax.get_ylim())
 
