@@ -13,7 +13,8 @@ UPFOLD = 100
 LOWFOLD = 0.01
 STARTS_NUM = 11
 STARTS_NAME_LIST = ["Am", "Ao", "Af", "ACSF", "Tm", "Tp", "To", "Tf", "TCSF", "TpCSF", "N"]
-
+START_WEIGHT_UB = 1000.0
+START_WEIGHT_LB = 0.0001
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--dataset", type=str, choices=["chosen_0", "all", "rebuild"], help="dataset strategy")
@@ -21,7 +22,7 @@ parser.add_argument("--start", type=str, choices=["ranged", "fixed"], help="star
 parser.add_argument("--generation", type=int, default=1000, help="generation, default: 1000")
 parser.add_argument("--pop_size", type=int, default=50, help="pop_size, default: 50")
 parser.add_argument("--model_name", default="none", type=str, help="model_name, can be any string")
-parser.add_argument("--option", type=str, choices=["option1", "option2"], help="option")
+parser.add_argument("--option", type=str, default="option1", choices=["option1", "option2"], help="option")
 parser.add_argument("--tcsf_scaler", type=float, help="tcsf_scaler, e.g., 0.3, 0.4, 0.5")
 opt = parser.parse_args()
 
@@ -112,78 +113,78 @@ else:
             "id": 0,
             "name": "Am",
             "init": 1.000,
-            "lb": 1.000 - 0.3,
-            "ub": 1.000 + 0.3,
+            "lb": START_WEIGHT_LB,
+            "ub": START_WEIGHT_UB,
         },
         {
             "id": 1,
             "name": "Ao",
             "init": 1.000,
-            "lb": 1.000 - 0.3,
-            "ub": 1.000 + 0.3,
+            "lb": START_WEIGHT_LB,
+            "ub": START_WEIGHT_UB,
         },
         {
             "id": 2,
             "name": "Af",
             "init": 1.000,
-            "lb": 1.000 - 0.3,  # - 0.058705655763439606,
-            "ub": 1.000,
+            "lb": START_WEIGHT_LB,
+            "ub": START_WEIGHT_UB,
         },
         {
             "id": 3,
             "name": "ACSF",
             "init": 1.000,
-            "lb": 1.000,
-            "ub": 1.000 + 0.3,  # + 0.14633390295437004,
+            "lb": START_WEIGHT_LB,
+            "ub": START_WEIGHT_UB,
         },
         {
             "id": 4,
             "name": "Tm",
             "init": 1.000,
-            "lb": 1.000 - 0.3,
-            "ub": 1.000 + 0.3,
+            "lb": START_WEIGHT_LB,
+            "ub": START_WEIGHT_UB,
         },
         {
             "id": 5,
             "name": "Tp",
             "init": 1.000,
-            "lb": 1.000 - 0.3,
-            "ub": 1.000 + 0.3,
+            "lb": START_WEIGHT_LB,
+            "ub": START_WEIGHT_UB,
         },
         {
             "id": 6,
             "name": "To",
             "init": 1.000,
-            "lb": 1.000 - 0.3,
-            "ub": 1.000 + 0.3,
+            "lb": START_WEIGHT_LB,
+            "ub": START_WEIGHT_UB,
         },
         {
             "id": 7,
             "name": "Tf",
             "init": 1.000,
-            "lb": 1.000 - 0.3,  # - 0.1106672083840519,
-            "ub": 1.000,
+            "lb": START_WEIGHT_LB,
+            "ub": START_WEIGHT_UB,
         },
         {
             "id": 8,
             "name": "TCSF",
             "init": 1.000,
-            "lb": 1.000 - 0.3,  # - 0.3034193899069153,
-            "ub": 1.000,
+            "lb": START_WEIGHT_LB,
+            "ub": START_WEIGHT_UB,
         },
         {
             "id": 9,
             "name": "TpCSF",
             "init": 1.000,
-            "lb": 1.000 - 0.3,  # - 0.20798415143947105,
-            "ub": 1.000,
+            "lb": START_WEIGHT_LB,
+            "ub": START_WEIGHT_UB,
         },
         {
             "id": 10,
             "name": "N",
             "init": 1.000,
-            "lb": 1.000 - 0.3,  # - 0.01991284446769561,
-            "ub": 1.000,
+            "lb": START_WEIGHT_LB,
+            "ub": START_WEIGHT_UB,
         },
     ]
 

@@ -4,6 +4,7 @@ draft = """#!/bin/bash
 #SBATCH --nodes=2
 #SBATCH --time=1-00:00:00
 #SBATCH --mem=20GB
+#SBATCH --account=chenGrp
 #SBATCH --mail-user=xue20@wfu.edu
 #SBATCH --mail-type=BEGIN,END,FAIL
 #SBATCH --output="jobs_oe/{0}-%j.o"

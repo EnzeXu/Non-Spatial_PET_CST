@@ -64,7 +64,7 @@ def simulate(pop_size=50, generation=100, method="GA"):
     parser.add_argument("--generation", type=int, default=1000, help="generation, default: 1000")
     parser.add_argument("--pop_size", type=int, default=50, help="pop_size, default: 50")
     parser.add_argument("--model_name", default="none", type=str, help="model_name, can be any string")
-    parser.add_argument("--option", type=str, choices=["option1", "option2"], help="option")
+    parser.add_argument("--option", type=str, default="option1", choices=["option1", "option2"], help="option")
     parser.add_argument("--tcsf_scaler", type=float, help="tcsf_scaler, e.g., 0.3, 0.4, 0.5")
     opt = parser.parse_args()
     if opt.generation:
@@ -294,7 +294,7 @@ def package_figure_json(parameter_path, save_folder="figure"):
     parser.add_argument("--generation", default=1000, type=int, help="generation")
     parser.add_argument("--pop_size", default=100, type=int, help="pop_size")
     parser.add_argument("--model_name", default="none", type=str, help="model_name")
-    parser.add_argument("--option", type=str, choices=["option1", "option2"], help="option")
+    parser.add_argument("--option", type=str, default="option1", choices=["option1", "option2"], help="option")
     parser.add_argument("--tcsf_scaler", type=float, help="tcsf_scaler")
     opt = parser.parse_args()
     ct = ConstTruth(
