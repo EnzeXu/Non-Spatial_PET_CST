@@ -10,3 +10,4 @@ venv/*
 test*
 !test_nsga.py
 simulation_record*.txt
+one_time*
