@@ -518,8 +518,8 @@ def loss_func(params, starts_weight, ct):
     # record = record[[0, 1, 3, 4, 5, 6]]
     # print("gradient_check: {} ({})".format(sum(gradient_check), gradient_check))
     csf_rate = \
-        f_csf_rate(np.max(truth.output[3][0]) / np.max(truth.output[6][0]), thr=1.7052845384621318, tol=0.2, p=10.0) + \
-        f_csf_rate(np.max(truth.output[4][0]) / np.max(truth.output[5][0]), thr=0.7142857142857143, tol=0.2, p=10.0)
+        f_csf_rate(np.max(truth.output[3][0]) / np.max(truth.output[6][0]), thr=1.7052845384621318, tol=0.2, p=100.0) + \
+        f_csf_rate(np.max(truth.output[4][0]) / np.max(truth.output[5][0]), thr=0.7142857142857143, tol=0.2, p=100.0)
     csf_rate += \
         limit_rate((truth.output[0][0][1200] - truth.output[0][0][300]) / truth.output[0][0][300], thr=ct.increase_rate[0], tol=2.0, p=10.0) + \
         limit_rate((truth.output[1][0][1200] - truth.output[1][0][300]) / truth.output[1][0][300], thr=ct.increase_rate[1], tol=2.0, p=10.0) + \
