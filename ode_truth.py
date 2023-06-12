@@ -60,10 +60,10 @@ class ConstTruth:
         self.y_original = dict()
         self.x_original = dict()
         self.increase_rate = np.zeros(7)
-        assert params["start"] in ["ranged", "fixed"]
+        assert params["start"] in ["ranged", "fixed"] or "ranged" in params["start"]
         assert params["dataset"] in ["all", "chosen_0", "rebuild"]
         if "x" not in params:
-            if params["start"] in ["ranged", "rebuild"]:
+            if params["start"] in ["ranged", "rebuild"] or "ranged" in params["start"]:
                 self.x_all = np.asarray([3, 6, 9, 11, 12])
             else:
                 self.x_all = np.asarray([0, 3, 6, 8, 9])
@@ -188,7 +188,7 @@ class ADSolver:
         TPET = np.expand_dims(np.mean(np.swapaxes(Tf, 0, 1), axis=0), axis=0)
         NPET = np.expand_dims(np.mean(np.swapaxes(N, 0, 1), axis=0), axis=0)
 
-        NPET = 200.0 - NPET
+        NPET = 0.9 - (NPET - np.min(NPET)) / (np.max(NPET) - np.min(NPET)) * 0.1  # 200.0 - NPET
 
         TtCSF = TpCSF + TCSF
         # print("APET[0]:", APET[0][0])
@@ -271,8 +271,8 @@ class ADSolver:
         Af_ = k_cA * numpy_safe_pow(Am, n_cA) * Ao
 
         ACSF_ = k_sA * sum_func(Am) - k_yA * ACSF
-        assert self.const_truth.params["option"] in ["option1", "option2"]
-        if self.const_truth.params["option"] == "option1":
+        assert self.const_truth.params["option"] in ["option1", "option2"] or "option1" in self.const_truth.params["option"]
+        if "option1" in self.const_truth.params["option"]:
             #####0222######
             Tm_ = k_pTm * Am ** 2 - k_dTm * Tm - (
                     k_ph1 + k_ph2 * Ao
@@ -370,7 +370,7 @@ class ADSolver:
                 legend_list=[name],
                 line_width=2,
             )
-            ax.scatter(x=self.const_truth.x[line_string], y=y_lists[0][(self.const_truth.x[line_string] / self.T_unit).astype(int)], s=100, facecolor=self.colors[i + self.n_color], alpha=0.8, marker="x", linewidths=3, zorder=10)
+            # ax.scatter(x=self.const_truth.x[line_string], y=y_lists[0][(self.const_truth.x[line_string] / self.T_unit).astype(int)], s=100, facecolor=self.colors[i + self.n_color], alpha=0.8, marker="x", linewidths=3, zorder=10)  # x nodes
             # ax.set_ylim([np.min(data[0]), np.max(data[0])])
             self.predict_ylim[self.lines[i]] = list(ax.get_ylim())
 
@@ -397,7 +397,7 @@ class ADSolver:
                 #                 edgecolors='black', linewidths=1,
                 #                 zorder=10)
                 ax2.tick_params(axis='y', labelcolor="red", labelsize=15)
-                if self.const_truth.params["start"] == "ranged":
+                if "ranged" in self.const_truth.params["start"]:
                     ylim_bottom, ylim_top = ax2.get_ylim()
                     index_fixed = (x / self.T_unit).astype(int)
                     curve_data = data[0][index_fixed]
@@ -511,27 +511,45 @@ def loss_func(params, starts_weight, ct):
 
         # record[i] = np.mean(((predict_points - target_points) / target_points) ** 2)
         record[i] = np.mean((predict_points_scaled - target_points_scaled) ** 2)
-        if i == 3:
-            record[i] /= 10.0
-        elif i == 1:
+        if i == 2:
+            record[i] /= 1.0
+        elif i in [4, 5, 6]:
             record[i] *= 10.0
     # record = record[[0, 1, 3, 4, 5, 6]]
     # print("gradient_check: {} ({})".format(sum(gradient_check), gradient_check))
     csf_rate = \
         f_csf_rate(np.max(truth.output[3][0]) / np.max(truth.output[6][0]), thr=1.7052845384621318, tol=0.2, p=100.0) + \
-        f_csf_rate(np.max(truth.output[4][0]) / np.max(truth.output[5][0]), thr=0.7142857142857143, tol=0.2, p=100.0)
+        f_csf_rate(np.max(truth.output[4][0]) / np.max(truth.output[5][0]), thr=0.7142857142857143, tol=0.2, p=100.0) + \
+        f_csf_rate(np.max(truth.output[0][0]) / np.max(truth.output[1][0]), thr=1.7, tol=0.2, p=100.0)
     csf_rate += \
         limit_rate((truth.output[0][0][1200] - truth.output[0][0][300]) / truth.output[0][0][300], thr=ct.increase_rate[0], tol=2.0, p=10.0) + \
         limit_rate((truth.output[1][0][1200] - truth.output[1][0][300]) / truth.output[1][0][300], thr=ct.increase_rate[1], tol=2.0, p=10.0) + \
         limit_rate((truth.output[3][0][1200] - truth.output[3][0][300]) / truth.output[3][0][300], thr=ct.increase_rate[3], tol=2.0, p=10.0) + \
-        limit_rate((truth.output[4][0][1200] - truth.output[4][0][300]) / truth.output[4][0][300], thr=ct.increase_rate[4], tol=2.0, p=10.0) + \
-        limit_rate((truth.output[5][0][1200] - truth.output[5][0][300]) / truth.output[5][0][300], thr=ct.increase_rate[5], tol=2.0, p=10.0) + \
-        limit_rate((truth.output[6][0][1200] - truth.output[6][0][300]) / truth.output[6][0][300], thr=ct.increase_rate[6], tol=2.0, p=10.0)
+        limit_rate((truth.output[4][0][1200] - truth.output[4][0][300]) / truth.output[4][0][300], thr=ct.increase_rate[4], tol=2.0, p=0.1) + \
+        limit_rate((truth.output[5][0][1200] - truth.output[5][0][300]) / truth.output[5][0][300], thr=ct.increase_rate[5], tol=2.0, p=0.1) + \
+        limit_rate((truth.output[6][0][1200] - truth.output[6][0][300]) / truth.output[6][0][300], thr=ct.increase_rate[6], tol=2.0, p=0.1)
 
     csf_rate += sum(gradient_check)
     # limit_rate((truth.output[2][0][1200] - truth.output[2][0][300]) / truth.output[2][0][300], thr=ct.increase_rate[2], tol=2.0, p=1.0) + \
 
+    record *= 10.0
+
     return record, csf_rate  # remove NPET here
+
+
+def transform_boundary(init_default_list, target_names, fix_values):
+    output = []
+    for i, item in enumerate(init_default_list):
+        assert i == item.get("id")
+        assert len(fix_values) == len(init_default_list)
+        if item.get("name") in target_names:
+            output.append(item)
+        else:
+            item["init"] = fix_values[i]
+            item["ub"] = fix_values[i]
+            item["lb"] = fix_values[i]
+            output.append(item)
+    return output
 
 
 # MyTime is only for debugging
@@ -566,13 +584,14 @@ def run(params=None, starts=None, time_string=None, opt=None):
     class_name = "CN"
     if opt is None:
         parser = argparse.ArgumentParser()
-        parser.add_argument("--dataset", type=str, choices=["all", "chosen_0"], help="dataset strategy")
-        parser.add_argument("--start", type=str, choices=["fixed", "ranged"], help="start strategy")
-        parser.add_argument("--generation", default=1000, type=int, help="generation")
-        parser.add_argument("--pop_size", default=100, type=int, help="pop_size")
-        parser.add_argument("--model_name", default="none", type=str, help="model_name")
-        parser.add_argument("--option", type=str, default="option1", choices=["option1", "option2"], help="option")
-        parser.add_argument("--tcsf_scaler", type=float, help="tcsf_scaler")
+        parser.add_argument("--dataset", type=str, choices=["chosen_0", "all", "rebuild"], help="dataset strategy")
+        parser.add_argument("--start", type=str, choices=["ranged", "ranged*", "fixed"], help="start strategy")
+        parser.add_argument("--generation", type=int, default=1000, help="generation, default: 1000")
+        parser.add_argument("--pop_size", type=int, default=50, help="pop_size, default: 50")
+        parser.add_argument("--model_name", default="none", type=str, help="model_name, can be any string")
+        parser.add_argument("--option", type=str, default="option1", choices=["option1", "option1*", "option2"], help="option")
+        parser.add_argument("--tcsf_scaler", type=float, default=0.3, help="tcsf_scaler, e.g., 0.3, 0.4, 0.5")
+        parser.add_argument("--init_path", type=str, default=None, help="init_path")
         opt = parser.parse_args()
     ct = ConstTruth(
         csf_folder_path="data/CSF/",
@@ -603,13 +622,21 @@ if __name__ == "__main__":
     # starts = full_params[-STARTS_NUM:]
     # run(params, starts)
 
-    ct = ConstTruth(
-        csf_folder_path="data/CSF/",
-        pet_folder_path="data/PET/",
-        dataset="chosen_0",
-        start="ranged",
-        option="option1",
-        tcsf_scaler=0.3,
-    )
+    # ct = ConstTruth(
+    #     csf_folder_path="data/CSF/",
+    #     pet_folder_path="data/PET/",
+    #     dataset="chosen_0",
+    #     start="ranged",
+    #     option="option1",
+    #     tcsf_scaler=0.3,
+    # )
+
+
+    parameters_full = np.load("saves/params_20230310_192938_379363.npy")
+    print(len(parameters_full))
+    PARAMS = transform_boundary(PARAMS, ["K_AN", "K_mAN", "n_AN", "K_TN", "K_mTN", "n_TN"], parameters_full[:49])
+    print(json.dumps(PARAMS, indent=4))
+    STARTS_WEIGHTS = transform_boundary(STARTS_WEIGHTS, ["N"], parameters_full[-11:])
+    print(json.dumps(STARTS_WEIGHTS, indent=4))
 
 

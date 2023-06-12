@@ -60,12 +60,13 @@ def simulate(pop_size=50, generation=100, method="GA"):
     print("[run - multi_obj] Start at {}".format(time_string_start))
     parser = argparse.ArgumentParser()
     parser.add_argument("--dataset", type=str, choices=["chosen_0", "all", "rebuild"], help="dataset strategy")
-    parser.add_argument("--start", type=str, choices=["ranged", "fixed"], help="start strategy")
+    parser.add_argument("--start", type=str, choices=["ranged", "ranged*", "fixed"], help="start strategy")
     parser.add_argument("--generation", type=int, default=1000, help="generation, default: 1000")
     parser.add_argument("--pop_size", type=int, default=50, help="pop_size, default: 50")
     parser.add_argument("--model_name", default="none", type=str, help="model_name, can be any string")
-    parser.add_argument("--option", type=str, default="option1", choices=["option1", "option2"], help="option")
-    parser.add_argument("--tcsf_scaler", type=float, help="tcsf_scaler, e.g., 0.3, 0.4, 0.5")
+    parser.add_argument("--option", type=str, default="option1", choices=["option1", "option1*", "option2"], help="option")
+    parser.add_argument("--tcsf_scaler", type=float, default=0.3, help="tcsf_scaler, e.g., 0.3, 0.4, 0.5")
+    parser.add_argument("--init_path", type=str, default=None, help="init_path")
     opt = parser.parse_args()
     if opt.generation:
         generation = opt.generation
@@ -84,8 +85,13 @@ def simulate(pop_size=50, generation=100, method="GA"):
         tcsf_scaler=opt.tcsf_scaler
     )
     problem = MyProblem(ct)
-
-    initial_x = np.asarray([PARAMS[i]["init"] for i in range(PARAM_NUM)] + [STARTS_WEIGHTS[i]["init"] for i in range(STARTS_NUM)])  # default
+    if opt.init_path is not None:
+        assert os.path.exists(opt.init_path), "initial path {} is not valid!".format(opt.init_path)
+        print("[run - multi_obj] initial weights: {}".format(opt.init_path))
+        initial_x = np.asarray(np.load(opt.init_path))
+    else:
+        print("[run - multi_obj] initial weights: default")
+        initial_x = np.asarray([PARAMS[i]["init"] for i in range(PARAM_NUM)] + [STARTS_WEIGHTS[i]["init"] for i in range(STARTS_NUM)])  # default
 #    initial_x = np.load("saves/params_20221203_113822.npy")
     assert method in ["GA", "DE", "ES", "PSO", "BRKGA", "G3PCX"]
     print("[run - multi_obj] Method: {}".format(method))
@@ -289,13 +295,14 @@ def package_figure_json(parameter_path, save_folder="figure"):
     json_path = "{}/plot_{}.json".format(json_folder, timestring)
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dataset", type=str, choices=["all", "chosen_0"], help="dataset strategy")
-    parser.add_argument("--start", type=str, choices=["fixed", "ranged"], help="start strategy")
-    parser.add_argument("--generation", default=1000, type=int, help="generation")
-    parser.add_argument("--pop_size", default=100, type=int, help="pop_size")
-    parser.add_argument("--model_name", default="none", type=str, help="model_name")
-    parser.add_argument("--option", type=str, default="option1", choices=["option1", "option2"], help="option")
-    parser.add_argument("--tcsf_scaler", type=float, help="tcsf_scaler")
+    parser.add_argument("--dataset", type=str, choices=["chosen_0", "all", "rebuild"], help="dataset strategy")
+    parser.add_argument("--start", type=str, choices=["ranged", "ranged*", "fixed"], help="start strategy")
+    parser.add_argument("--generation", type=int, default=1000, help="generation, default: 1000")
+    parser.add_argument("--pop_size", type=int, default=50, help="pop_size, default: 50")
+    parser.add_argument("--model_name", default="none", type=str, help="model_name, can be any string")
+    parser.add_argument("--option", type=str, default="option1", choices=["option1", "option1*", "option2"], help="option")
+    parser.add_argument("--tcsf_scaler", type=float, default=0.3, help="tcsf_scaler, e.g., 0.3, 0.4, 0.5")
+    parser.add_argument("--init_path", type=str, default=None, help="init_path")
     opt = parser.parse_args()
     ct = ConstTruth(
         csf_folder_path="data/CSF/",
