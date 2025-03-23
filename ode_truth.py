@@ -541,6 +541,63 @@ def loss_func(params, starts_weight, ct):
     return record, csf_rate  # remove NPET here
 
 
+def loss_func_nrmse(params, starts_weight, ct):
+    # print("calling loss_func..")
+    truth = ADSolver("CN", ct)
+    truth.step(params, starts_weight)
+    targets = ["APET", "TPET", "NPET", "ACSF", "TpCSF", "TCSF", "TtCSF"]
+    record_nrmse_mean = np.zeros(len(targets))
+    record_nrmse_range = np.zeros(len(targets))
+    record_nrmse_std = np.zeros(len(targets))
+    record_nrmse_l2nrom = np.zeros(len(targets))
+
+    for i, one_target in enumerate(targets):
+        target_points = np.asarray(ct.y[one_target])
+        if len(target_points) == 0:
+            record_nrmse_mean[i] = 0.0
+            record_nrmse_range[i] = 0.0
+            record_nrmse_std[i] = 0.0
+            record_nrmse_l2nrom[i] = 0.0
+            continue
+        t_fixed = np.asarray(ct.x[one_target])
+
+        index_fixed = (t_fixed / truth.T_unit).astype(int)
+        predict_points = np.asarray(truth.output[i][0][index_fixed])
+
+
+        target_points_scaled = (target_points - np.min(target_points)) / (np.max(target_points) - np.min(target_points))
+        # print("[loss_func] ({}) predict_points: {}".format(one_target, predict_points))
+
+        if np.max(predict_points) - np.min(predict_points) <= 1e-20:
+            predict_points_scaled = np.zeros(len(target_points_scaled))
+        else:
+            predict_points_scaled = (predict_points - np.min(predict_points)) / (np.max(predict_points) - np.min(predict_points))
+
+        mse = np.mean((predict_points_scaled - target_points_scaled) ** 2)
+
+        # Calculate RMSE
+        rmse = np.sqrt(mse)
+
+        # Calculate NRMSE using range (max - min) of the target points
+        nrmse_range = rmse / (np.max(target_points_scaled) - np.min(target_points_scaled))
+
+        # Alternatively, calculate NRMSE using the standard deviation of the target points
+        nrmse_std = rmse / np.std(target_points_scaled)
+
+        nrmse_mean = rmse / np.mean(target_points_scaled)
+
+        l2_norm_target = np.linalg.norm(target_points_scaled)  # L2 norm of the target points
+        nrmse_l2_norm = rmse / l2_norm_target
+
+        record_nrmse_mean[i] = nrmse_mean
+        record_nrmse_std[i] = nrmse_std
+        record_nrmse_range[i] = nrmse_range
+        record_nrmse_l2nrom[i] = nrmse_l2_norm
+
+
+    return record_nrmse_mean, record_nrmse_range, record_nrmse_std, record_nrmse_l2nrom
+
+
 def transform_boundary(init_default_list, target_names, fix_values):
     output = []
     for i, item in enumerate(init_default_list):
@@ -615,6 +672,44 @@ def run(params=None, starts=None, time_string=None, opt=None):
     return truth
 
 
+def run_nrmse(params=None, starts=None, time_string=None, opt=None):
+    if not time_string:
+        time_string = get_now_string()
+    print("Time String (as folder name): {}".format(time_string))
+
+    class_name = "CN"
+    if opt is None:
+        parser = argparse.ArgumentParser()
+        parser.add_argument("--dataset", type=str, choices=["chosen_0", "all", "rebuild"], help="dataset strategy")
+        parser.add_argument("--start", type=str, choices=["ranged", "ranged*", "fixed"], help="start strategy")
+        parser.add_argument("--generation", type=int, default=1000, help="generation, default: 1000")
+        parser.add_argument("--pop_size", type=int, default=50, help="pop_size, default: 50")
+        parser.add_argument("--model_name", default="none", type=str, help="model_name, can be any string")
+        parser.add_argument("--option", type=str, default="option1", choices=["option1", "option1*", "option2"], help="option")
+        parser.add_argument("--tcsf_scaler", type=float, default=0.3, help="tcsf_scaler, e.g., 0.3, 0.4, 0.5")
+        parser.add_argument("--init_path", type=str, default=None, help="init_path")
+        opt = parser.parse_args()
+    ct = ConstTruth(
+        csf_folder_path="data/CSF/",
+        pet_folder_path="data/PET/",
+        dataset=opt.dataset,
+        start=opt.start,
+        option=opt.option,
+        tcsf_scaler=opt.tcsf_scaler,
+    )
+    truth = ADSolver(class_name, ct)
+    print(f"0619 debug: pred y0: {truth.y0}")
+    truth.step(params, starts)
+    record_nrmse_mean, record_nrmse_range, record_nrmse_std, record_nrmse_l2nrom = loss_func_nrmse(params, starts, ct)
+    print(f'fig names: {["APET", "TPET", "NPET", "ACSF", "TpCSF", "TCSF", "TtCSF"]}')
+    print(f'record_nrmse_mean: {record_nrmse_mean}')
+    print(f'record_nrmse_range: {record_nrmse_range}')
+    print(f'record_nrmse_std: {record_nrmse_std}')
+    print(f'record_nrmse_l2norm: {record_nrmse_l2nrom}')
+
+    return truth
+
+
 if __name__ == "__main__":
     # ct = ConstTruth(
     #     csf_folder_path="data/CSF/",
@@ -625,7 +720,8 @@ if __name__ == "__main__":
     full_params = np.load("saves/params_20230314_185400_648329.npy")
     params = full_params[:PARAM_NUM]
     starts = full_params[-STARTS_NUM:]
-    run(params, starts)
+    # run(params, starts)
+    run_nrmse(params, starts)
 
     # ct = ConstTruth(
     #     csf_folder_path="data/CSF/",
