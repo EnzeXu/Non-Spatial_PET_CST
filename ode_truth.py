@@ -165,6 +165,10 @@ class ADSolver:
             self.starts_weights = np.asarray([STARTS_WEIGHTS[i]["init"] for i in range(STARTS_NUM)])
             print("Params & starts_weights are not given. Using the initial value instead to simulate ...")
         self.y0 = self.y0 * self.starts_weights
+
+        print(f"debug 0619 final start y0: {self.y0[[2,7,10]]}")
+        print(f"start weights: {self.starts_weights}")
+
         self.y = odeint(self.pend, self.y0, self.t, rtol=self.tol, atol=self.tol)
         self.output = self.get_output()
 
@@ -602,6 +606,7 @@ def run(params=None, starts=None, time_string=None, opt=None):
         tcsf_scaler=opt.tcsf_scaler,
     )
     truth = ADSolver(class_name, ct)
+    print(f"0619 debug: pred y0: {truth.y0}")
     truth.step(params, starts)
     loss, csf_rate_loss = loss_func(params, starts, ct)
     print("loss: {}".format(sum(loss) + csf_rate_loss))
@@ -617,10 +622,10 @@ if __name__ == "__main__":
     #     dataset="all"
     # )
 
-    # full_params = np.load("saves/params_20230105_031544_255565.npy")
-    # params = full_params[:PARAM_NUM]
-    # starts = full_params[-STARTS_NUM:]
-    # run(params, starts)
+    full_params = np.load("saves/params_20230314_185400_648329.npy")
+    params = full_params[:PARAM_NUM]
+    starts = full_params[-STARTS_NUM:]
+    run(params, starts)
 
     # ct = ConstTruth(
     #     csf_folder_path="data/CSF/",
@@ -632,11 +637,11 @@ if __name__ == "__main__":
     # )
 
 
-    parameters_full = np.load("saves/params_20230310_192938_379363.npy")
-    print(len(parameters_full))
-    PARAMS = transform_boundary(PARAMS, ["K_AN", "K_mAN", "n_AN", "K_TN", "K_mTN", "n_TN"], parameters_full[:49])
-    print(json.dumps(PARAMS, indent=4))
-    STARTS_WEIGHTS = transform_boundary(STARTS_WEIGHTS, ["N"], parameters_full[-11:])
-    print(json.dumps(STARTS_WEIGHTS, indent=4))
+    # parameters_full = np.load("saves/params_20230310_192938_379363.npy")
+    # print(len(parameters_full))
+    # PARAMS = transform_boundary(PARAMS, ["K_AN", "K_mAN", "n_AN", "K_TN", "K_mTN", "n_TN"], parameters_full[:49])
+    # print(json.dumps(PARAMS, indent=4))
+    # STARTS_WEIGHTS = transform_boundary(STARTS_WEIGHTS, ["N"], parameters_full[-11:])
+    # print(json.dumps(STARTS_WEIGHTS, indent=4))
 
 
