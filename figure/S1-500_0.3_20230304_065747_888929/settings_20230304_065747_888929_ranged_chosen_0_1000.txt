@@ -1,0 +1,10 @@
+start time (as folder name): 20230304_065747_888929
+end time: 20230304_070127_616100
+time cost (min): 3.6621188640594484
+method: GA
+dataset strategy: chosen_0
+start strategy: ranged
+generation: 1000
+pop_size: 100
+old_loss: 192.37715806508132
+new_loss: 11.371961758820067
