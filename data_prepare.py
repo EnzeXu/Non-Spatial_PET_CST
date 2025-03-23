@@ -54,6 +54,101 @@ def one_time_deal_PET(data_path_list=None):
         # for i in range(class_number):
         #     print(len(collection_patient_wise[i]), collection_patient_wise[i])
 
+# one time record all patient-wise data into data/PETCSF_patient_wise
+def one_time_PETCSF_patient_wise():
+    save_folder = "data/PETCSF_patient_wise/"
+    os.makedirs(save_folder, exist_ok=True)
+
+    # PET
+    data_path_list = ["data/271amyloid.csv", "data/271tau.csv", "data/271fdg.csv"]
+    data_a = pd.read_csv(data_path_list[0])
+    data_t = pd.read_csv(data_path_list[1])
+    data_n = pd.read_csv(data_path_list[2])
+    data_a = data_a[COLUMN_NAMES + TITLE_NAMES]
+    data_t = data_t[COLUMN_NAMES + TITLE_NAMES]
+    data_n = data_n[COLUMN_NAMES + TITLE_NAMES]
+
+    class_number = 5
+
+    pet_collection = dict()
+
+    for ii, type_name, df in zip(range(3), ["APET", "TPET", "NPET"], [data_a, data_t, data_n]):
+        # collection = np.zeros((class_number, 160))
+        patient_collection = [[] for _ in range(class_number)]
+
+        counts = np.zeros(class_number)
+        for index, row in df.iterrows():
+            label = None
+            for one_key in LABELS:
+                if row["DX"] in LABELS[one_key]:
+                    label = one_key
+                    counts[LABEL_ID[label]] += 1
+                    row_sum = 0.0
+                    for i in range(160):
+                        row_sum += float(row[COLUMN_NAMES[i]])
+                    patient_collection[LABEL_ID[label]].append(row_sum / 160)
+                    break
+
+            if not label:
+                # print("key not found: \"{}\"".format(row["DX"]))
+                continue
+
+
+        for one_key in LABELS:
+            if counts[LABEL_ID[one_key]] != 0:
+                assert counts[LABEL_ID[one_key]] == len(patient_collection[LABEL_ID[one_key]])
+                avg = sum(patient_collection[LABEL_ID[one_key]]) / len(patient_collection[LABEL_ID[one_key]])
+
+                print(one_key, np.mean(avg))
+        print(type_name, "counts:", counts)
+        pet_collection[type_name] = patient_collection
+
+    with open(f"{save_folder}/PET_collection.pkl", "wb") as f:
+        pickle.dump(pet_collection, f)
+
+    # CSF
+    csf_path = "data/CSF_Bio_All_WF.csv"
+    dictionary_pickle_path = "data/CSF/ptid_dictionary.pkl"
+    with open(dictionary_pickle_path, "rb") as f:
+        ptid_dic = pickle.load(f)
+    df = pd.read_csv(csf_path)[["RID", "ABETA", "TAU", "PTAU"]]
+    class_list = list(LABELS.keys())
+    counts = np.zeros(len(class_list))
+    collection = np.zeros([len(class_list), 3])
+
+    csf_patient_wise_dict = dict()
+    # collection_acsf = [[] for i in range(5)]
+    for one_key in ["ACSF", "TpCSF", "TCSF", "TtCSF"]:
+        csf_patient_wise_dict[one_key] = [[] for i in range(5)]
+    for index, row in df.iterrows():
+        ptid_key = str(int(row["RID"])).zfill(4)
+        if ptid_key not in ptid_dic:
+            print("ptid key {} not found! Skip it!".format(ptid_key))
+            continue
+        label = ptid_dic[ptid_key]
+        if not (np.isnan(row[COLUMN_NAMES_CSF[0]]) or np.isnan(row[COLUMN_NAMES_CSF[1]]) or np.isnan(row[COLUMN_NAMES_CSF[2]])):
+            counts[LABEL_ID[label]] += 1
+            for i in range(3):
+                collection[LABEL_ID[label]][i] += float(row[COLUMN_NAMES_CSF[i]])
+            csf_patient_wise_dict["ACSF"][LABEL_ID[label]].append(float(row[COLUMN_NAMES_CSF[0]]))
+            csf_patient_wise_dict["TpCSF"][LABEL_ID[label]].append(float(row[COLUMN_NAMES_CSF[2]]))
+            csf_patient_wise_dict["TCSF"][LABEL_ID[label]].append(float(row[COLUMN_NAMES_CSF[1]]) - float(row[COLUMN_NAMES_CSF[2]]))
+            csf_patient_wise_dict["TtCSF"][LABEL_ID[label]].append(float(row[COLUMN_NAMES_CSF[1]]))
+    for one_key in LABELS:
+        if counts[LABEL_ID[one_key]] != 0:
+            avg = collection[LABEL_ID[one_key], :] / counts[LABEL_ID[one_key]]
+            np.save("data/CSF/CSF_{}".format(one_key), avg)
+            print("CSF_{} counts={} avg={}".format(one_key, counts[LABEL_ID[one_key]], avg))
+    print("CSF counts:", counts)
+    # print(csf_patient_wise_dict)
+    for one_key in csf_patient_wise_dict:
+        print(one_key)
+        for i in range(5):
+            print(len(csf_patient_wise_dict[one_key][i]))
+    with open(f"{save_folder}/CSF_collection.pkl", "wb") as f:
+        pickle.dump(csf_patient_wise_dict, f)
+
+
 
 def one_time_deal_PET_specified(APOE, gender, data_path_list=None):
     if not data_path_list:
@@ -401,8 +496,11 @@ def one_time_plot_ct(ct: ConstTruthSpecified):
 if __name__ == "__main__":
     # # one_time_deal_PET()
     # # d = one_time_build_ptid_dictionary()
+    one_time_PETCSF_patient_wise()
+
     one_time_deal_CSF()
-    # one_time_deal_PET()
+    one_time_deal_PET()
+
     # # one_time_deal_PET_all()
     # one_time_compare("PET-A_full", "PET-A", ["PET-A_full_{}", "PET-A_{}"], "PET_A")
     # one_time_compare("PET-N_full", "PET-N", ["PET-N_full_{}", "PET-N_{}"], "PET_N")

@@ -392,11 +392,11 @@ def test_params_starts(params_path="saves/params_default_57.npy"):
     return params_names, params, starts_names, starts
 
 if __name__ == "__main__":
-    # full_params = np.load("saves/params_20230113_102137_344977.npy")
-    # params = full_params[:PARAM_NUM]
-    # starts = full_params[-STARTS_NUM:]
-    # run(params, starts)
-    package_figure_json("saves/params_20230113_102137_344977.npy")
+    full_params = np.load("saves/params_20230113_102137_344977.npy")
+    params = full_params[:PARAM_NUM]
+    starts = full_params[-STARTS_NUM:]
+    run(params, starts)
+    # package_figure_json("saves/params_20230113_102137_344977.npy")
     # simulate(pop_size=30, generation=1000, method="DE")
 
     # params = np.asarray([PARAMS[i]["init"] for i in range(PARAM_NUM)])

@@ -724,3 +724,15 @@ if __name__ == "__main__":
 
     # a = np.asarray([1,2,4,5,7, 0])
     # print(np.where(a > 3))
+
+def get_patient_wise_list(pickle_odj, line_string, k):
+    """
+
+    :param pickle_odj:
+    :param line_string: one of ["APET", "TPET", "NPET", "ACSF", "TpCSF", "TCSF", "TtCSF"]
+    :param k: 0, 1, 2, 3, 4
+    :return:
+    """
+    patient_wise_list = list(pickle_odj[line_string][k])
+    patient_wise_list = [float(item) for item in patient_wise_list]
+    return patient_wise_list
